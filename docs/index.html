@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html>
+<head>
+    
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    <title>Field Shift KH</title>
+    
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Khmer:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  html, body { font-family: system-ui, -apple-system, "Segoe UI", "Noto Sans Khmer", sans-serif; }
+  body:not(.lang-km) .km, body.lang-km .en { display: none; }
+  .panel { position: fixed; z-index: 650; /* above markers, below Leaflet pop-ups (700) */ background: #fff; border-radius: 10px;
+           box-shadow: 0 2px 10px rgba(0,0,0,.2); padding: 10px 14px; color: #1d2329; }
+  .title { top: 12px; left: 56px; max-width: min(420px, calc(100vw - 80px)); }
+  .title h1 { font-size: 18px; margin: 0 0 2px; }
+  .title p { font-size: 13px; margin: 0; color: #4a5560; }
+  .lang { margin-top: 8px; }
+  .lang button { border: 1px solid #c9ced4; background: #fff; border-radius: 6px; padding: 3px 10px;
+                 cursor: pointer; font: inherit; font-size: 13px; }
+  .lang button.on { background: #1d2329; color: #fff; border-color: #1d2329; }
+  .legend { bottom: 28px; left: 12px; font-size: 13px; line-height: 1.7; }
+  .dot { display: inline-block; width: 12px; height: 12px; border-radius: 50%; margin-right: 6px; vertical-align: -1px; }
+  .footer { bottom: 28px; right: 12px; font-size: 11px; max-width: 300px; color: #4a5560; }
+  @media (max-width: 600px) { .footer { display: none; } .title { left: 50px; } }
+  .popup { font-size: 13px; line-height: 1.45; width: 320px; max-width: 75vw;
+           max-height: min(65vh, 480px); overflow-y: auto; padding-right: 4px; }
+  .popup .head { display: flex; justify-content: space-between; align-items: center; gap: 8px; font-size: 15px; }
+  .popup h4 { margin: 10px 0 3px; font-size: 13px; display: flex; gap: 6px; align-items: center; }
+  .popup p { margin: 0; }
+  .popup ul { margin: 2px 0; padding-left: 18px; }
+  .popup .small { margin-top: 8px; font-size: 11px; color: #5b6670; }
+  .chip { border-radius: 10px; padding: 0 8px; font-size: 11px; font-weight: 600; white-space: nowrap; }
+  .chart { width: 100%; height: auto; margin-top: 4px; }
+  .chart text { font-size: 9px; fill: #5b6670; }
+  .legend-row { font-size: 11px; color: #5b6670; }
+  .sw { display: inline-block; width: 10px; height: 10px; margin: 0 4px 0 8px; vertical-align: -1px; }
+</style>
+    <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-glyphicons.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.2.0/css/all.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/python-visualization/folium/folium/templates/leaflet.awesome.rotate.min.css"/>
+    
+            <meta name="viewport" content="width=device-width,
+                initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+            <style>
+                #map_cd6da7e9eb6af9397a4e66ed7d87f747 {
+                    position: relative;
+                    width: 100.0%;
+                    height: 100.0%;
+                    left: 0.0%;
+                    top: 0.0%;
+                }
+                .leaflet-container { font-size: 1rem; }
+            </style>
+
+            <style>html, body {
+                width: 100%;
+                height: 100%;
+                margin: 0;
+                padding: 0;
+            }
+            </style>
+
+            <style>#map {
+                position:absolute;
+                top:0;
+                bottom:0;
+                right:0;
+                left:0;
+                }
+            </style>
+
+            <script>
+                L_NO_TOUCH = false;
+                L_DISABLE_3D = false;
+            </script>
+
+        
+</head>
+<body>
+    
+    
+<div class="panel title">
+  <h1>Field Shift KH</h1>
+  <p><span class="en">Rice planting guidance from NASA POWER Earth data. Click a province.</span><span class="km">ការណែនាំអំពីការដាំស្រូវ ពីទិន្នន័យផែនដី NASA POWER។ ចុចលើខេត្តណាមួយ។</span></p>
+  <div class="lang">
+    <button id="btn-en" class="on" onclick="setLang('en')">English</button>
+    <button id="btn-km" onclick="setLang('km')">ខ្មែរ</button>
+  </div>
+</div>
+<div class="panel legend"><div><span class="dot" style="background:#2e7d32"></span><span class="en">Normal</span><span class="km">ធម្មតា</span></div><div><span class="dot" style="background:#f2a900"></span><span class="en">Watch</span><span class="km">ប្រុងប្រយ័ត្ន</span></div><div><span class="dot" style="background:#c62828"></span><span class="en">Warning</span><span class="km">ព្រមាន</span></div></div>
+<div class="panel footer">
+  <span class="en">Data: NASA POWER daily point API (AG), 2000–2026, power.larc.nasa.gov. Rule-based prototype, not yet validated by agronomists. Code partly generated with AI (Claude Code).</span><span class="km">ទិន្នន័យ៖ NASA POWER (AG) ២០០០–២០២៦, power.larc.nasa.gov។ គំរូដំបូងផ្អែកលើច្បាប់ មិនទាន់ត្រួតពិនិត្យដោយអ្នកជំនាញកសិកម្ម។ កូដមួយផ្នែកបង្កើតដោយ AI (Claude Code)។</span>
+  <span class="en">Built 2026-10-30.</span><span class="km">បង្កើតថ្ងៃ 2026-10-30។</span>
+</div>
+<script>
+  function setLang(l) {
+    document.body.classList.toggle('lang-km', l === 'km');
+    document.documentElement.lang = l;
+    document.getElementById('btn-en').classList.toggle('on', l === 'en');
+    document.getElementById('btn-km').classList.toggle('on', l === 'km');
+  }
+  // Hide the title panel while a pop-up is open so it doesn't cover the pop-up.
+  window.addEventListener('load', () => {
+    const map = Object.values(window).find(v => v instanceof L.Map);
+    const title = document.querySelector('.panel.title');
+    map.on('popupopen', () => title.style.display = 'none');
+    map.on('popupclose', () => title.style.display = '');
+  });
+</script>
+    
+            <div class="folium-map" id="map_cd6da7e9eb6af9397a4e66ed7d87f747" ></div>
+        
+</body>
+<script>
+    
+    
+            var map_cd6da7e9eb6af9397a4e66ed7d87f747 = L.map(
+                "map_cd6da7e9eb6af9397a4e66ed7d87f747",
+                {
+                    center: [12.3, 104.6],
+                    crs: L.CRS.EPSG3857,
+                    ...{
+  "zoom": 7,
+  "zoomControl": true,
+  "preferCanvas": false,
+}
+
+                }
+            );
+            L.control.scale().addTo(map_cd6da7e9eb6af9397a4e66ed7d87f747);
+
+            
+
+        
+    
+            var tile_layer_62bbdffec0b7da7f518db3db405862a2 = L.tileLayer(
+                "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+                {
+  "minZoom": 0,
+  "maxZoom": 19,
+  "maxNativeZoom": 19,
+  "noWrap": false,
+  "attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors",
+  "subdomains": "abc",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
+            );
+        
+    
+            tile_layer_62bbdffec0b7da7f518db3db405862a2.addTo(map_cd6da7e9eb6af9397a4e66ed7d87f747);
+        
+    
+            var circle_marker_1deca83687a8f3b8a97eb1ab276becbb = L.circleMarker(
+                [10.99, 104.78],
+                {"bubblingMouseEvents": true, "color": "#fff", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#c62828", "fillOpacity": 0.95, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 16, "stroke": true, "weight": 3}
+            ).addTo(map_cd6da7e9eb6af9397a4e66ed7d87f747);
+        
+    
+        var popup_2d8272e33077eac2b347ab01d1870d4a = L.popup({
+  "maxWidth": 360,
+});
+
+        
+            
+                var html_5babeb013891f5490bbcfaad0b737dcd = $(`<div id="html_5babeb013891f5490bbcfaad0b737dcd" style="width: 100.0%; height: 100.0%;"> <div class="popup">   <div class="head">     <div><b>តាកែវ</b> · Takeo</div>     <span class="chip" style="background:#c62828;color:#fff"><span class="en">Warning</span><span class="km">ព្រមាន</span></span>   </div>    <h4><span class="en">1. Season check</span><span class="km">១. ពិនិត្យរដូវ</span> <span class="chip" style="background:#2e7d32;color:#fff"><span class="en">Normal</span><span class="km">ធម្មតា</span></span></h4>   <p><span class="en">Rain since 1 May: <b>1203 mm</b> (normal 1129 mm, <b>+7%</b>)</span><span class="km">ទឹកភ្លៀងចាប់ពី ១ ឧសភា៖ <b>1203 មម</b> (ធម្មតា 1129 មម, <b>+7%</b>)</span><br>   <span class="en">Soil moisture (last 30 days): 0.89 (normal 0.85)</span><span class="km">សំណើមដី (៣០ថ្ងៃចុងក្រោយ)៖ 0.89 (ធម្មតា 0.85)</span></p>   <svg viewBox="0 0 300 96" class="chart" role="img" aria-label="Monthly rainfall"><rect x="4.0" y="77.0" width="10.3" height="5.0" fill="#b8bec6"/><rect x="14.3" y="80.3" width="10.3" height="1.7" fill="#2e7d32" opacity="1"/><text x="14.3" y="94" text-anchor="middle">J</text><rect x="28.7" y="78.2" width="10.3" height="3.8" fill="#b8bec6"/><rect x="39.0" y="76.4" width="10.3" height="5.6" fill="#2e7d32" opacity="1"/><text x="39.0" y="94" text-anchor="middle">F</text><rect x="53.3" y="72.6" width="10.3" height="9.4" fill="#b8bec6"/><rect x="63.7" y="78.1" width="10.3" height="3.9" fill="#2e7d32" opacity="1"/><text x="63.7" y="94" text-anchor="middle">M</text><rect x="78.0" y="62.6" width="10.3" height="19.4" fill="#b8bec6"/><rect x="88.3" y="79.5" width="10.3" height="2.5" fill="#2e7d32" opacity="1"/><text x="88.3" y="94" text-anchor="middle">A</text><rect x="102.7" y="40.7" width="10.3" height="41.3" fill="#b8bec6"/><rect x="113.0" y="51.9" width="10.3" height="30.1" fill="#2e7d32" opacity="1"/><text x="113.0" y="94" text-anchor="middle">M</text><rect x="127.3" y="25.9" width="10.3" height="56.1" fill="#b8bec6"/><rect x="137.7" y="47.1" width="10.3" height="34.9" fill="#2e7d32" opacity="1"/><text x="137.7" y="94" text-anchor="middle">J</text><rect x="152.0" y="24.8" width="10.3" height="57.2" fill="#b8bec6"/><rect x="162.3" y="0.0" width="10.3" height="82.0" fill="#2e7d32" opacity="1"/><text x="162.3" y="94" text-anchor="middle">J</text><rect x="176.7" y="26.9" width="10.3" height="55.1" fill="#b8bec6"/><rect x="187.0" y="36.3" width="10.3" height="45.7" fill="#2e7d32" opacity="1"/><text x="187.0" y="94" text-anchor="middle">A</text><rect x="201.3" y="18.6" width="10.3" height="63.4" fill="#b8bec6"/><rect x="211.7" y="1.1" width="10.3" height="80.9" fill="#2e7d32" opacity="1"/><text x="211.7" y="94" text-anchor="middle">S</text><rect x="226.0" y="26.4" width="10.3" height="55.6" fill="#b8bec6"/><rect x="236.3" y="9.5" width="10.3" height="72.5" fill="#2e7d32" opacity="0.45"/><text x="236.3" y="94" text-anchor="middle">O</text><rect x="250.7" y="51.4" width="10.3" height="30.6" fill="#b8bec6"/><text x="261.0" y="94" text-anchor="middle">N</text><rect x="275.3" y="72.4" width="10.3" height="9.6" fill="#b8bec6"/><text x="285.7" y="94" text-anchor="middle">D</text></svg>   <div class="legend-row"><span class="sw" style="background:#b8bec6"></span><span class="en">Normal 2000–2025</span><span class="km">ធម្មតា ២០០០–២០២៥</span>     <span class="sw" style="background:#2e7d32"></span>2026</div>    <h4><span class="en">2. Planting window</span><span class="km">២. ពេលវេលាដាំសមស្រប</span> <span class="chip" style="background:#c62828;color:#fff"><span class="en">Warning</span><span class="km">ព្រមាន</span></span></h4>   <p><span class="en">Monsoon onset</span><span class="km">ការចាប់ផ្តើមរដូវវស្សា</span>: <b><span class="en">21 May</span><span class="km">21 ឧសភា</span></b>      (<span class="en">normal</span><span class="km">ធម្មតា</span> <span class="en">4 May</span><span class="km">4 ឧសភា</span>) · <span class="en">17 days later than normal</span><span class="km">យឺតជាងធម្មតា 17 ថ្ងៃ</span><br>   <span class="en">Recommended sowing/transplanting</span><span class="km">ពេលសាបព្រោះ/ស្ទូងដែលណែនាំ</span>: <b><span class="en">21 May</span><span class="km">21 ឧសភា</span> – <span class="en">11 Jun</span><span class="km">11 មិថុនា</span></b></p>    <h4><span class="en">3. Risk alerts</span><span class="km">៣. ការព្រមានហានិភ័យ</span></h4>   <p><span class="chip" style="background:#f2a900;color:#1d2329"><span class="en">Watch</span><span class="km">ប្រុងប្រយ័ត្ន</span></span> <span class="en">Dry spell: longest 8 dry days in a row this season</span><span class="km">រាំងស្ងួត៖ យូរបំផុត 8 ថ្ងៃជាប់គ្នា ក្នុងរដូវនេះ</span><br>   <span class="chip" style="background:#f2a900;color:#1d2329"><span class="en">Watch</span><span class="km">ប្រុងប្រយ័ត្ន</span></span> <span class="en">Flood: heaviest 3-day rain in last 30 days 63 mm (alert above 55 mm)</span><span class="km">ទឹកជំនន់៖ ភ្លៀង៣ថ្ងៃខ្លាំងបំផុត ក្នុង៣០ថ្ងៃចុងក្រោយ 63 មម (ព្រមានលើស 55 មម)</span></p>    <h4><span class="en">4. What to do</span><span class="km">៤. អ្វីដែលគួរធ្វើ</span></h4>   <ul><li><span class="en">Delay transplanting until rains are steady; keep seedlings in the nursery longer.</span><span class="km">ពន្យារពេលស្ទូង រហូតដល់មានភ្លៀងធ្លាក់ទៀងទាត់ ហើយទុកកូនស្រូវក្នុងថ្នាលបន្តិចទៀត។</span></li><li><span class="en">Choose a short-duration rice variety so the crop finishes before the rains end.</span><span class="km">ជ្រើសរើសពូជស្រូវរយៈពេលខ្លី ដើម្បីឱ្យស្រូវទុំមុនរដូវភ្លៀងចប់។</span></li><li><span class="en">Store water in ponds or canals and irrigate during dry spells if you can.</span><span class="km">ស្តុកទឹកក្នុងស្រះ ឬប្រឡាយ ហើយស្រោចស្រពនៅពេលរាំងស្ងួត បើអាចធ្វើបាន។</span></li><li><span class="en">Clear field drains and check bunds before heavy rain.</span><span class="km">សម្អាតប្រឡាយបង្ហូរទឹក និងពិនិត្យភ្លឺស្រែ មុនពេលភ្លៀងខ្លាំង។</span></li><li><span class="en">Keep seedbeds on higher ground to protect them from flooding.</span><span class="km">រៀបចំថ្នាលសំណាបនៅលើដីខ្ពស់ ដើម្បីការពារពីទឹកជំនន់។</span></li></ul>    <p class="small"><span class="en">Back-test: these rules would have flagged a late monsoon in 2003, 2010, 2013, 2015, 2016.</span><span class="km">ការសាកល្បងលើអតីតកាល៖ ច្បាប់ទាំងនេះនឹងព្រមានពីរដូវវស្សាយឺតក្នុងឆ្នាំ 2003, 2010, 2013, 2015, 2016។</span>   <span class="en">Data up to 2026-10-27.</span><span class="km">ទិន្នន័យដល់ថ្ងៃ 2026-10-27។</span></p> </div></div>`)[0];
+                popup_2d8272e33077eac2b347ab01d1870d4a.setContent(html_5babeb013891f5490bbcfaad0b737dcd);
+            
+        
+
+        circle_marker_1deca83687a8f3b8a97eb1ab276becbb.bindPopup(popup_2d8272e33077eac2b347ab01d1870d4a)
+        ;
+
+        
+    
+    
+            circle_marker_1deca83687a8f3b8a97eb1ab276becbb.bindTooltip(
+                `<div>
+                     តាកែវ · Takeo
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_db7ff3b8df162522f01b1bccdef28c39 = L.circleMarker(
+                [11.48, 105.33],
+                {"bubblingMouseEvents": true, "color": "#fff", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#f2a900", "fillOpacity": 0.95, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 16, "stroke": true, "weight": 3}
+            ).addTo(map_cd6da7e9eb6af9397a4e66ed7d87f747);
+        
+    
+        var popup_149e916e76a30f25819e133a0ef22069 = L.popup({
+  "maxWidth": 360,
+});
+
+        
+            
+                var html_564fe98d2bee6b8746d7140c659cde11 = $(`<div id="html_564fe98d2bee6b8746d7140c659cde11" style="width: 100.0%; height: 100.0%;"> <div class="popup">   <div class="head">     <div><b>ព្រៃវែង</b> · Prey Veng</div>     <span class="chip" style="background:#f2a900;color:#1d2329"><span class="en">Watch</span><span class="km">ប្រុងប្រយ័ត្ន</span></span>   </div>    <h4><span class="en">1. Season check</span><span class="km">១. ពិនិត្យរដូវ</span> <span class="chip" style="background:#2e7d32;color:#fff"><span class="en">Normal</span><span class="km">ធម្មតា</span></span></h4>   <p><span class="en">Rain since 1 May: <b>1107 mm</b> (normal 1026 mm, <b>+8%</b>)</span><span class="km">ទឹកភ្លៀងចាប់ពី ១ ឧសភា៖ <b>1107 មម</b> (ធម្មតា 1026 មម, <b>+8%</b>)</span><br>   <span class="en">Soil moisture (last 30 days): 0.91 (normal 0.81)</span><span class="km">សំណើមដី (៣០ថ្ងៃចុងក្រោយ)៖ 0.91 (ធម្មតា 0.81)</span></p>   <svg viewBox="0 0 300 96" class="chart" role="img" aria-label="Monthly rainfall"><rect x="4.0" y="79.0" width="10.3" height="3.0" fill="#b8bec6"/><rect x="14.3" y="81.2" width="10.3" height="0.8" fill="#2e7d32" opacity="1"/><text x="14.3" y="94" text-anchor="middle">J</text><rect x="28.7" y="79.7" width="10.3" height="2.3" fill="#b8bec6"/><rect x="39.0" y="76.0" width="10.3" height="6.0" fill="#2e7d32" opacity="1"/><text x="39.0" y="94" text-anchor="middle">F</text><rect x="53.3" y="76.0" width="10.3" height="6.0" fill="#b8bec6"/><rect x="63.7" y="80.2" width="10.3" height="1.8" fill="#2e7d32" opacity="1"/><text x="63.7" y="94" text-anchor="middle">M</text><rect x="78.0" y="69.1" width="10.3" height="12.9" fill="#b8bec6"/><rect x="88.3" y="80.7" width="10.3" height="1.3" fill="#2e7d32" opacity="1"/><text x="88.3" y="94" text-anchor="middle">A</text><rect x="102.7" y="43.9" width="10.3" height="38.1" fill="#b8bec6"/><rect x="113.0" y="45.8" width="10.3" height="36.2" fill="#2e7d32" opacity="1"/><text x="113.0" y="94" text-anchor="middle">M</text><rect x="127.3" y="30.8" width="10.3" height="51.2" fill="#b8bec6"/><rect x="137.7" y="55.6" width="10.3" height="26.4" fill="#2e7d32" opacity="1"/><text x="137.7" y="94" text-anchor="middle">J</text><rect x="152.0" y="36.4" width="10.3" height="45.6" fill="#b8bec6"/><rect x="162.3" y="24.4" width="10.3" height="57.6" fill="#2e7d32" opacity="1"/><text x="162.3" y="94" text-anchor="middle">J</text><rect x="176.7" y="38.6" width="10.3" height="43.4" fill="#b8bec6"/><rect x="187.0" y="53.4" width="10.3" height="28.6" fill="#2e7d32" opacity="1"/><text x="187.0" y="94" text-anchor="middle">A</text><rect x="201.3" y="33.2" width="10.3" height="48.8" fill="#b8bec6"/><rect x="211.7" y="0.0" width="10.3" height="82.0" fill="#2e7d32" opacity="1"/><text x="211.7" y="94" text-anchor="middle">S</text><rect x="226.0" y="29.2" width="10.3" height="52.8" fill="#b8bec6"/><rect x="236.3" y="14.7" width="10.3" height="67.3" fill="#2e7d32" opacity="0.45"/><text x="236.3" y="94" text-anchor="middle">O</text><rect x="250.7" y="54.8" width="10.3" height="27.2" fill="#b8bec6"/><text x="261.0" y="94" text-anchor="middle">N</text><rect x="275.3" y="74.1" width="10.3" height="7.9" fill="#b8bec6"/><text x="285.7" y="94" text-anchor="middle">D</text></svg>   <div class="legend-row"><span class="sw" style="background:#b8bec6"></span><span class="en">Normal 2000–2025</span><span class="km">ធម្មតា ២០០០–២០២៥</span>     <span class="sw" style="background:#2e7d32"></span>2026</div>    <h4><span class="en">2. Planting window</span><span class="km">២. ពេលវេលាដាំសមស្រប</span> <span class="chip" style="background:#2e7d32;color:#fff"><span class="en">Normal</span><span class="km">ធម្មតា</span></span></h4>   <p><span class="en">Monsoon onset</span><span class="km">ការចាប់ផ្តើមរដូវវស្សា</span>: <b><span class="en">19 May</span><span class="km">19 ឧសភា</span></b>      (<span class="en">normal</span><span class="km">ធម្មតា</span> <span class="en">7 May</span><span class="km">7 ឧសភា</span>) · <span class="en">12 days later than normal</span><span class="km">យឺតជាងធម្មតា 12 ថ្ងៃ</span><br>   <span class="en">Recommended sowing/transplanting</span><span class="km">ពេលសាបព្រោះ/ស្ទូងដែលណែនាំ</span>: <b><span class="en">19 May</span><span class="km">19 ឧសភា</span> – <span class="en">9 Jun</span><span class="km">9 មិថុនា</span></b></p>    <h4><span class="en">3. Risk alerts</span><span class="km">៣. ការព្រមានហានិភ័យ</span></h4>   <p><span class="chip" style="background:#f2a900;color:#1d2329"><span class="en">Watch</span><span class="km">ប្រុងប្រយ័ត្ន</span></span> <span class="en">Dry spell: longest 7 dry days in a row this season</span><span class="km">រាំងស្ងួត៖ យូរបំផុត 7 ថ្ងៃជាប់គ្នា ក្នុងរដូវនេះ</span><br>   <span class="chip" style="background:#f2a900;color:#1d2329"><span class="en">Watch</span><span class="km">ប្រុងប្រយ័ត្ន</span></span> <span class="en">Flood: heaviest 3-day rain in last 30 days 62 mm (alert above 51 mm)</span><span class="km">ទឹកជំនន់៖ ភ្លៀង៣ថ្ងៃខ្លាំងបំផុត ក្នុង៣០ថ្ងៃចុងក្រោយ 62 មម (ព្រមានលើស 51 មម)</span></p>    <h4><span class="en">4. What to do</span><span class="km">៤. អ្វីដែលគួរធ្វើ</span></h4>   <ul><li><span class="en">Store water in ponds or canals and irrigate during dry spells if you can.</span><span class="km">ស្តុកទឹកក្នុងស្រះ ឬប្រឡាយ ហើយស្រោចស្រពនៅពេលរាំងស្ងួត បើអាចធ្វើបាន។</span></li><li><span class="en">Choose a short-duration rice variety so the crop finishes before the rains end.</span><span class="km">ជ្រើសរើសពូជស្រូវរយៈពេលខ្លី ដើម្បីឱ្យស្រូវទុំមុនរដូវភ្លៀងចប់។</span></li><li><span class="en">Clear field drains and check bunds before heavy rain.</span><span class="km">សម្អាតប្រឡាយបង្ហូរទឹក និងពិនិត្យភ្លឺស្រែ មុនពេលភ្លៀងខ្លាំង។</span></li><li><span class="en">Keep seedbeds on higher ground to protect them from flooding.</span><span class="km">រៀបចំថ្នាលសំណាបនៅលើដីខ្ពស់ ដើម្បីការពារពីទឹកជំនន់។</span></li></ul>    <p class="small"><span class="en">Back-test: these rules would have flagged a late monsoon in 2010, 2013, 2014, 2015, 2016, 2025.</span><span class="km">ការសាកល្បងលើអតីតកាល៖ ច្បាប់ទាំងនេះនឹងព្រមានពីរដូវវស្សាយឺតក្នុងឆ្នាំ 2010, 2013, 2014, 2015, 2016, 2025។</span>   <span class="en">Data up to 2026-10-27.</span><span class="km">ទិន្នន័យដល់ថ្ងៃ 2026-10-27។</span></p> </div></div>`)[0];
+                popup_149e916e76a30f25819e133a0ef22069.setContent(html_564fe98d2bee6b8746d7140c659cde11);
+            
+        
+
+        circle_marker_db7ff3b8df162522f01b1bccdef28c39.bindPopup(popup_149e916e76a30f25819e133a0ef22069)
+        ;
+
+        
+    
+    
+            circle_marker_db7ff3b8df162522f01b1bccdef28c39.bindTooltip(
+                `<div>
+                     ព្រៃវែង · Prey Veng
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_43e5024a5fc549741b9088b53ba37c5b = L.circleMarker(
+                [13.1, 103.2],
+                {"bubblingMouseEvents": true, "color": "#fff", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#c62828", "fillOpacity": 0.95, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 16, "stroke": true, "weight": 3}
+            ).addTo(map_cd6da7e9eb6af9397a4e66ed7d87f747);
+        
+    
+        var popup_290acb0ff2c159fbbae5154ca412ff47 = L.popup({
+  "maxWidth": 360,
+});
+
+        
+            
+                var html_f8ac264f51bc30a22673cdff6870b0b2 = $(`<div id="html_f8ac264f51bc30a22673cdff6870b0b2" style="width: 100.0%; height: 100.0%;"> <div class="popup">   <div class="head">     <div><b>បាត់ដំបង</b> · Battambang</div>     <span class="chip" style="background:#c62828;color:#fff"><span class="en">Warning</span><span class="km">ព្រមាន</span></span>   </div>    <h4><span class="en">1. Season check</span><span class="km">១. ពិនិត្យរដូវ</span> <span class="chip" style="background:#f2a900;color:#1d2329"><span class="en">Watch</span><span class="km">ប្រុងប្រយ័ត្ន</span></span></h4>   <p><span class="en">Rain since 1 May: <b>2026 mm</b> (normal 1609 mm, <b>+26%</b>)</span><span class="km">ទឹកភ្លៀងចាប់ពី ១ ឧសភា៖ <b>2026 មម</b> (ធម្មតា 1609 មម, <b>+26%</b>)</span><br>   <span class="en">Soil moisture (last 30 days): 0.83 (normal 0.93)</span><span class="km">សំណើមដី (៣០ថ្ងៃចុងក្រោយ)៖ 0.83 (ធម្មតា 0.93)</span></p>   <svg viewBox="0 0 300 96" class="chart" role="img" aria-label="Monthly rainfall"><rect x="4.0" y="79.2" width="10.3" height="2.8" fill="#b8bec6"/><rect x="14.3" y="80.9" width="10.3" height="1.1" fill="#f2a900" opacity="1"/><text x="14.3" y="94" text-anchor="middle">J</text><rect x="28.7" y="77.0" width="10.3" height="5.0" fill="#b8bec6"/><rect x="39.0" y="77.0" width="10.3" height="5.0" fill="#f2a900" opacity="1"/><text x="39.0" y="94" text-anchor="middle">F</text><rect x="53.3" y="72.1" width="10.3" height="9.9" fill="#b8bec6"/><rect x="63.7" y="75.0" width="10.3" height="7.0" fill="#f2a900" opacity="1"/><text x="63.7" y="94" text-anchor="middle">M</text><rect x="78.0" y="66.5" width="10.3" height="15.5" fill="#b8bec6"/><rect x="88.3" y="77.1" width="10.3" height="4.9" fill="#f2a900" opacity="1"/><text x="88.3" y="94" text-anchor="middle">A</text><rect x="102.7" y="52.1" width="10.3" height="29.9" fill="#b8bec6"/><rect x="113.0" y="49.3" width="10.3" height="32.7" fill="#f2a900" opacity="1"/><text x="113.0" y="94" text-anchor="middle">M</text><rect x="127.3" y="41.1" width="10.3" height="40.9" fill="#b8bec6"/><rect x="137.7" y="54.7" width="10.3" height="27.3" fill="#f2a900" opacity="1"/><text x="137.7" y="94" text-anchor="middle">J</text><rect x="152.0" y="33.9" width="10.3" height="48.1" fill="#b8bec6"/><rect x="162.3" y="0.0" width="10.3" height="82.0" fill="#f2a900" opacity="1"/><text x="162.3" y="94" text-anchor="middle">J</text><rect x="176.7" y="36.5" width="10.3" height="45.5" fill="#b8bec6"/><rect x="187.0" y="22.4" width="10.3" height="59.6" fill="#f2a900" opacity="1"/><text x="187.0" y="94" text-anchor="middle">A</text><rect x="201.3" y="32.4" width="10.3" height="49.6" fill="#b8bec6"/><rect x="211.7" y="8.7" width="10.3" height="73.3" fill="#f2a900" opacity="1"/><text x="211.7" y="94" text-anchor="middle">S</text><rect x="226.0" y="51.5" width="10.3" height="30.5" fill="#b8bec6"/><rect x="236.3" y="51.2" width="10.3" height="30.8" fill="#f2a900" opacity="0.45"/><text x="236.3" y="94" text-anchor="middle">O</text><rect x="250.7" y="74.0" width="10.3" height="8.0" fill="#b8bec6"/><text x="261.0" y="94" text-anchor="middle">N</text><rect x="275.3" y="80.6" width="10.3" height="1.4" fill="#b8bec6"/><text x="285.7" y="94" text-anchor="middle">D</text></svg>   <div class="legend-row"><span class="sw" style="background:#b8bec6"></span><span class="en">Normal 2000–2025</span><span class="km">ធម្មតា ២០០០–២០២៥</span>     <span class="sw" style="background:#f2a900"></span>2026</div>    <h4><span class="en">2. Planting window</span><span class="km">២. ពេលវេលាដាំសមស្រប</span> <span class="chip" style="background:#c62828;color:#fff"><span class="en">Warning</span><span class="km">ព្រមាន</span></span></h4>   <p><span class="en">Monsoon onset</span><span class="km">ការចាប់ផ្តើមរដូវវស្សា</span>: <b><span class="en">4 May</span><span class="km">4 ឧសភា</span></b>      (<span class="en">normal</span><span class="km">ធម្មតា</span> <span class="en">18 Apr</span><span class="km">18 មេសា</span>) · <span class="en">16 days later than normal</span><span class="km">យឺតជាងធម្មតា 16 ថ្ងៃ</span><br>   <span class="en">Recommended sowing/transplanting</span><span class="km">ពេលសាបព្រោះ/ស្ទូងដែលណែនាំ</span>: <b><span class="en">4 May</span><span class="km">4 ឧសភា</span> – <span class="en">25 May</span><span class="km">25 ឧសភា</span></b></p>    <h4><span class="en">3. Risk alerts</span><span class="km">៣. ការព្រមានហានិភ័យ</span></h4>   <p><span class="chip" style="background:#2e7d32;color:#fff"><span class="en">Normal</span><span class="km">ធម្មតា</span></span> <span class="en">Dry spell: longest 3 dry days in a row this season</span><span class="km">រាំងស្ងួត៖ យូរបំផុត 3 ថ្ងៃជាប់គ្នា ក្នុងរដូវនេះ</span><br>   <span class="chip" style="background:#2e7d32;color:#fff"><span class="en">Normal</span><span class="km">ធម្មតា</span></span> <span class="en">Flood: heaviest 3-day rain in last 30 days 51 mm (alert above 73 mm)</span><span class="km">ទឹកជំនន់៖ ភ្លៀង៣ថ្ងៃខ្លាំងបំផុត ក្នុង៣០ថ្ងៃចុងក្រោយ 51 មម (ព្រមានលើស 73 មម)</span></p>    <h4><span class="en">4. What to do</span><span class="km">៤. អ្វីដែលគួរធ្វើ</span></h4>   <ul><li><span class="en">Delay transplanting until rains are steady; keep seedlings in the nursery longer.</span><span class="km">ពន្យារពេលស្ទូង រហូតដល់មានភ្លៀងធ្លាក់ទៀងទាត់ ហើយទុកកូនស្រូវក្នុងថ្នាលបន្តិចទៀត។</span></li><li><span class="en">Choose a short-duration rice variety so the crop finishes before the rains end.</span><span class="km">ជ្រើសរើសពូជស្រូវរយៈពេលខ្លី ដើម្បីឱ្យស្រូវទុំមុនរដូវភ្លៀងចប់។</span></li><li><span class="en">Clear field drains and check bunds before heavy rain.</span><span class="km">សម្អាតប្រឡាយបង្ហូរទឹក និងពិនិត្យភ្លឺស្រែ មុនពេលភ្លៀងខ្លាំង។</span></li><li><span class="en">Keep seedbeds on higher ground to protect them from flooding.</span><span class="km">រៀបចំថ្នាលសំណាបនៅលើដីខ្ពស់ ដើម្បីការពារពីទឹកជំនន់។</span></li></ul>    <p class="small"><span class="en">Back-test: these rules would have flagged a late monsoon in 2005, 2014, 2015, 2017, 2019, 2024.</span><span class="km">ការសាកល្បងលើអតីតកាល៖ ច្បាប់ទាំងនេះនឹងព្រមានពីរដូវវស្សាយឺតក្នុងឆ្នាំ 2005, 2014, 2015, 2017, 2019, 2024។</span>   <span class="en">Data up to 2026-10-27.</span><span class="km">ទិន្នន័យដល់ថ្ងៃ 2026-10-27។</span></p> </div></div>`)[0];
+                popup_290acb0ff2c159fbbae5154ca412ff47.setContent(html_f8ac264f51bc30a22673cdff6870b0b2);
+            
+        
+
+        circle_marker_43e5024a5fc549741b9088b53ba37c5b.bindPopup(popup_290acb0ff2c159fbbae5154ca412ff47)
+        ;
+
+        
+    
+    
+            circle_marker_43e5024a5fc549741b9088b53ba37c5b.bindTooltip(
+                `<div>
+                     បាត់ដំបង · Battambang
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_e6b5d3b81f7e158ec81ffe0a88ba7d6e = L.circleMarker(
+                [12.71, 104.89],
+                {"bubblingMouseEvents": true, "color": "#fff", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#c62828", "fillOpacity": 0.95, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 16, "stroke": true, "weight": 3}
+            ).addTo(map_cd6da7e9eb6af9397a4e66ed7d87f747);
+        
+    
+        var popup_8e9fb06606e776b85484f4510cc7f96e = L.popup({
+  "maxWidth": 360,
+});
+
+        
+            
+                var html_d073a6953635be0c0594f3d3c7f0177f = $(`<div id="html_d073a6953635be0c0594f3d3c7f0177f" style="width: 100.0%; height: 100.0%;"> <div class="popup">   <div class="head">     <div><b>កំពង់ធំ</b> · Kampong Thom</div>     <span class="chip" style="background:#c62828;color:#fff"><span class="en">Warning</span><span class="km">ព្រមាន</span></span>   </div>    <h4><span class="en">1. Season check</span><span class="km">១. ពិនិត្យរដូវ</span> <span class="chip" style="background:#2e7d32;color:#fff"><span class="en">Normal</span><span class="km">ធម្មតា</span></span></h4>   <p><span class="en">Rain since 1 May: <b>1003 mm</b> (normal 1011 mm, <b>-1%</b>)</span><span class="km">ទឹកភ្លៀងចាប់ពី ១ ឧសភា៖ <b>1003 មម</b> (ធម្មតា 1011 មម, <b>-1%</b>)</span><br>   <span class="en">Soil moisture (last 30 days): 0.90 (normal 0.83)</span><span class="km">សំណើមដី (៣០ថ្ងៃចុងក្រោយ)៖ 0.90 (ធម្មតា 0.83)</span></p>   <svg viewBox="0 0 300 96" class="chart" role="img" aria-label="Monthly rainfall"><rect x="4.0" y="77.9" width="10.3" height="4.1" fill="#b8bec6"/><rect x="14.3" y="79.5" width="10.3" height="2.5" fill="#2e7d32" opacity="1"/><text x="14.3" y="94" text-anchor="middle">J</text><rect x="28.7" y="77.0" width="10.3" height="5.0" fill="#b8bec6"/><rect x="39.0" y="74.6" width="10.3" height="7.4" fill="#2e7d32" opacity="1"/><text x="39.0" y="94" text-anchor="middle">F</text><rect x="53.3" y="69.8" width="10.3" height="12.2" fill="#b8bec6"/><rect x="63.7" y="74.6" width="10.3" height="7.4" fill="#2e7d32" opacity="1"/><text x="63.7" y="94" text-anchor="middle">M</text><rect x="78.0" y="62.2" width="10.3" height="19.8" fill="#b8bec6"/><rect x="88.3" y="78.2" width="10.3" height="3.8" fill="#2e7d32" opacity="1"/><text x="88.3" y="94" text-anchor="middle">A</text><rect x="102.7" y="39.4" width="10.3" height="42.6" fill="#b8bec6"/><rect x="113.0" y="44.0" width="10.3" height="38.0" fill="#2e7d32" opacity="1"/><text x="113.0" y="94" text-anchor="middle">M</text><rect x="127.3" y="22.2" width="10.3" height="59.8" fill="#b8bec6"/><rect x="137.7" y="52.6" width="10.3" height="29.4" fill="#2e7d32" opacity="1"/><text x="137.7" y="94" text-anchor="middle">J</text><rect x="152.0" y="18.8" width="10.3" height="63.2" fill="#b8bec6"/><rect x="162.3" y="13.6" width="10.3" height="68.4" fill="#2e7d32" opacity="1"/><text x="162.3" y="94" text-anchor="middle">J</text><rect x="176.7" y="16.5" width="10.3" height="65.5" fill="#b8bec6"/><rect x="187.0" y="33.6" width="10.3" height="48.4" fill="#2e7d32" opacity="1"/><text x="187.0" y="94" text-anchor="middle">A</text><rect x="201.3" y="19.3" width="10.3" height="62.7" fill="#b8bec6"/><rect x="211.7" y="0.0" width="10.3" height="82.0" fill="#2e7d32" opacity="1"/><text x="211.7" y="94" text-anchor="middle">S</text><rect x="226.0" y="30.3" width="10.3" height="51.7" fill="#b8bec6"/><rect x="236.3" y="8.6" width="10.3" height="73.4" fill="#2e7d32" opacity="0.45"/><text x="236.3" y="94" text-anchor="middle">O</text><rect x="250.7" y="61.1" width="10.3" height="20.9" fill="#b8bec6"/><text x="261.0" y="94" text-anchor="middle">N</text><rect x="275.3" y="75.6" width="10.3" height="6.4" fill="#b8bec6"/><text x="285.7" y="94" text-anchor="middle">D</text></svg>   <div class="legend-row"><span class="sw" style="background:#b8bec6"></span><span class="en">Normal 2000–2025</span><span class="km">ធម្មតា ២០០០–២០២៥</span>     <span class="sw" style="background:#2e7d32"></span>2026</div>    <h4><span class="en">2. Planting window</span><span class="km">២. ពេលវេលាដាំសមស្រប</span> <span class="chip" style="background:#c62828;color:#fff"><span class="en">Warning</span><span class="km">ព្រមាន</span></span></h4>   <p><span class="en">Monsoon onset</span><span class="km">ការចាប់ផ្តើមរដូវវស្សា</span>: <b><span class="en">4 Jul</span><span class="km">4 កក្កដា</span></b>      (<span class="en">normal</span><span class="km">ធម្មតា</span> <span class="en">11 May</span><span class="km">11 ឧសភា</span>) · <span class="en">54 days later than normal</span><span class="km">យឺតជាងធម្មតា 54 ថ្ងៃ</span><br>   <span class="en">Recommended sowing/transplanting</span><span class="km">ពេលសាបព្រោះ/ស្ទូងដែលណែនាំ</span>: <b><span class="en">4 Jul</span><span class="km">4 កក្កដា</span> – <span class="en">25 Jul</span><span class="km">25 កក្កដា</span></b></p>    <h4><span class="en">3. Risk alerts</span><span class="km">៣. ការព្រមានហានិភ័យ</span></h4>   <p><span class="chip" style="background:#f2a900;color:#1d2329"><span class="en">Watch</span><span class="km">ប្រុងប្រយ័ត្ន</span></span> <span class="en">Dry spell: longest 8 dry days in a row this season</span><span class="km">រាំងស្ងួត៖ យូរបំផុត 8 ថ្ងៃជាប់គ្នា ក្នុងរដូវនេះ</span><br>   <span class="chip" style="background:#f2a900;color:#1d2329"><span class="en">Watch</span><span class="km">ប្រុងប្រយ័ត្ន</span></span> <span class="en">Flood: heaviest 3-day rain in last 30 days 61 mm (alert above 49 mm)</span><span class="km">ទឹកជំនន់៖ ភ្លៀង៣ថ្ងៃខ្លាំងបំផុត ក្នុង៣០ថ្ងៃចុងក្រោយ 61 មម (ព្រមានលើស 49 មម)</span></p>    <h4><span class="en">4. What to do</span><span class="km">៤. អ្វីដែលគួរធ្វើ</span></h4>   <ul><li><span class="en">Delay transplanting until rains are steady; keep seedlings in the nursery longer.</span><span class="km">ពន្យារពេលស្ទូង រហូតដល់មានភ្លៀងធ្លាក់ទៀងទាត់ ហើយទុកកូនស្រូវក្នុងថ្នាលបន្តិចទៀត។</span></li><li><span class="en">Choose a short-duration rice variety so the crop finishes before the rains end.</span><span class="km">ជ្រើសរើសពូជស្រូវរយៈពេលខ្លី ដើម្បីឱ្យស្រូវទុំមុនរដូវភ្លៀងចប់។</span></li><li><span class="en">Store water in ponds or canals and irrigate during dry spells if you can.</span><span class="km">ស្តុកទឹកក្នុងស្រះ ឬប្រឡាយ ហើយស្រោចស្រពនៅពេលរាំងស្ងួត បើអាចធ្វើបាន។</span></li><li><span class="en">Clear field drains and check bunds before heavy rain.</span><span class="km">សម្អាតប្រឡាយបង្ហូរទឹក និងពិនិត្យភ្លឺស្រែ មុនពេលភ្លៀងខ្លាំង។</span></li><li><span class="en">Keep seedbeds on higher ground to protect them from flooding.</span><span class="km">រៀបចំថ្នាលសំណាបនៅលើដីខ្ពស់ ដើម្បីការពារពីទឹកជំនន់។</span></li></ul>    <p class="small"><span class="en">Back-test: these rules would have flagged a late monsoon in 2010, 2013, 2014, 2015, 2016, 2017, 2023, 2025.</span><span class="km">ការសាកល្បងលើអតីតកាល៖ ច្បាប់ទាំងនេះនឹងព្រមានពីរដូវវស្សាយឺតក្នុងឆ្នាំ 2010, 2013, 2014, 2015, 2016, 2017, 2023, 2025។</span>   <span class="en">Data up to 2026-10-27.</span><span class="km">ទិន្នន័យដល់ថ្ងៃ 2026-10-27។</span></p> </div></div>`)[0];
+                popup_8e9fb06606e776b85484f4510cc7f96e.setContent(html_d073a6953635be0c0594f3d3c7f0177f);
+            
+        
+
+        circle_marker_e6b5d3b81f7e158ec81ffe0a88ba7d6e.bindPopup(popup_8e9fb06606e776b85484f4510cc7f96e)
+        ;
+
+        
+    
+    
+            circle_marker_e6b5d3b81f7e158ec81ffe0a88ba7d6e.bindTooltip(
+                `<div>
+                     កំពង់ធំ · Kampong Thom
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+</script>
+</html>

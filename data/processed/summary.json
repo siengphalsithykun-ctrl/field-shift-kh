@@ -1,0 +1,1432 @@
+{
+  "generated_from": "NASA POWER daily point data (https://power.larc.nasa.gov/)",
+  "current_year": 2026,
+  "rules": {
+    "dry_day_mm": 1.0,
+    "onset_earliest": "04-01",
+    "onset_3day_mm": 20.0,
+    "onset_no_dry_spell_days": 7,
+    "onset_late_days": 14,
+    "planting_window_days": 21,
+    "wet_season": [
+      "05-01",
+      "10-31"
+    ],
+    "dry_spell_yellow": 7,
+    "dry_spell_red": 10,
+    "rain_anomaly_yellow": 20,
+    "rain_anomaly_red": 40,
+    "flood_yellow_pct": 95,
+    "flood_red_pct": 99,
+    "recent_days": 30
+  },
+  "ai_disclosure": "Analysis code partly generated with AI assistance (Claude Code) and reviewed by the team.",
+  "provinces": {
+    "takeo": {
+      "slug": "takeo",
+      "name_en": "Takeo",
+      "name_km": "តាកែវ",
+      "lat": 10.99,
+      "lon": 104.78,
+      "last_data_date": "2026-10-27",
+      "overall": "red",
+      "onset": {
+        "level": "red",
+        "date": "2026-05-21",
+        "normal_date": "05-04",
+        "delay_days": 17,
+        "window_start": "2026-05-21",
+        "window_end": "2026-06-11"
+      },
+      "season_check": {
+        "level": "green",
+        "season_rain_mm": 1203.0,
+        "normal_season_rain_mm": 1129.0,
+        "rain_anomaly_pct": 7.0,
+        "soil_moisture_now": 0.89,
+        "soil_moisture_normal": 0.85
+      },
+      "dry_spell": {
+        "level": "yellow",
+        "longest_days": 8
+      },
+      "flood": {
+        "level": "yellow",
+        "recent_max_3day_mm": 63.0,
+        "p95_3day_mm": 55.0,
+        "p99_3day_mm": 89.0
+      },
+      "tips": [
+        "delay_transplanting",
+        "short_duration_variety",
+        "save_water",
+        "drainage",
+        "raise_seedbed"
+      ],
+      "monthly": [
+        {
+          "month": 1,
+          "normal_mm": 17.3,
+          "this_year_mm": 5.9,
+          "partial": false
+        },
+        {
+          "month": 2,
+          "normal_mm": 13.2,
+          "this_year_mm": 19.6,
+          "partial": false
+        },
+        {
+          "month": 3,
+          "normal_mm": 32.8,
+          "this_year_mm": 13.5,
+          "partial": false
+        },
+        {
+          "month": 4,
+          "normal_mm": 67.6,
+          "this_year_mm": 8.8,
+          "partial": false
+        },
+        {
+          "month": 5,
+          "normal_mm": 143.6,
+          "this_year_mm": 104.7,
+          "partial": false
+        },
+        {
+          "month": 6,
+          "normal_mm": 195.2,
+          "this_year_mm": 121.4,
+          "partial": false
+        },
+        {
+          "month": 7,
+          "normal_mm": 199.1,
+          "this_year_mm": 285.2,
+          "partial": false
+        },
+        {
+          "month": 8,
+          "normal_mm": 191.8,
+          "this_year_mm": 158.8,
+          "partial": false
+        },
+        {
+          "month": 9,
+          "normal_mm": 220.4,
+          "this_year_mm": 281.5,
+          "partial": false
+        },
+        {
+          "month": 10,
+          "normal_mm": 193.5,
+          "this_year_mm": 252.0,
+          "partial": true
+        },
+        {
+          "month": 11,
+          "normal_mm": 106.3,
+          "this_year_mm": null,
+          "partial": false
+        },
+        {
+          "month": 12,
+          "normal_mm": 33.3,
+          "this_year_mm": null,
+          "partial": false
+        }
+      ],
+      "backtest": [
+        {
+          "year": 2000,
+          "onset": "2000-05-12",
+          "onset_delay_days": 9,
+          "late_onset": false,
+          "longest_dry_spell_days": 4,
+          "dry_spell_alert": false,
+          "season_rain_mm": 1424.0
+        },
+        {
+          "year": 2001,
+          "onset": "2001-05-13",
+          "onset_delay_days": 9,
+          "late_onset": false,
+          "longest_dry_spell_days": 11,
+          "dry_spell_alert": true,
+          "season_rain_mm": 1116.0
+        },
+        {
+          "year": 2002,
+          "onset": "2002-05-10",
+          "onset_delay_days": 6,
+          "late_onset": false,
+          "longest_dry_spell_days": 7,
+          "dry_spell_alert": false,
+          "season_rain_mm": 714.0
+        },
+        {
+          "year": 2003,
+          "onset": "2003-06-25",
+          "onset_delay_days": 52,
+          "late_onset": true,
+          "longest_dry_spell_days": 10,
+          "dry_spell_alert": true,
+          "season_rain_mm": 1025.0
+        },
+        {
+          "year": 2004,
+          "onset": "2004-05-17",
+          "onset_delay_days": 14,
+          "late_onset": false,
+          "longest_dry_spell_days": 7,
+          "dry_spell_alert": false,
+          "season_rain_mm": 1073.0
+        },
+        {
+          "year": 2005,
+          "onset": "2005-05-10",
+          "onset_delay_days": 6,
+          "late_onset": false,
+          "longest_dry_spell_days": 7,
+          "dry_spell_alert": false,
+          "season_rain_mm": 851.0
+        },
+        {
+          "year": 2006,
+          "onset": "2006-04-26",
+          "onset_delay_days": -8,
+          "late_onset": false,
+          "longest_dry_spell_days": 6,
+          "dry_spell_alert": false,
+          "season_rain_mm": 1133.0
+        },
+        {
+          "year": 2007,
+          "onset": "2007-04-29",
+          "onset_delay_days": -5,
+          "late_onset": false,
+          "longest_dry_spell_days": 4,
+          "dry_spell_alert": false,
+          "season_rain_mm": 940.0
+        },
+        {
+          "year": 2008,
+          "onset": "2008-04-29",
+          "onset_delay_days": -4,
+          "late_onset": false,
+          "longest_dry_spell_days": 8,
+          "dry_spell_alert": false,
+          "season_rain_mm": 984.0
+        },
+        {
+          "year": 2009,
+          "onset": "2009-05-02",
+          "onset_delay_days": -2,
+          "late_onset": false,
+          "longest_dry_spell_days": 10,
+          "dry_spell_alert": true,
+          "season_rain_mm": 839.0
+        },
+        {
+          "year": 2010,
+          "onset": "2010-06-09",
+          "onset_delay_days": 36,
+          "late_onset": true,
+          "longest_dry_spell_days": 5,
+          "dry_spell_alert": false,
+          "season_rain_mm": 848.0
+        },
+        {
+          "year": 2011,
+          "onset": "2011-04-19",
+          "onset_delay_days": -15,
+          "late_onset": false,
+          "longest_dry_spell_days": 5,
+          "dry_spell_alert": false,
+          "season_rain_mm": 1012.0
+        },
+        {
+          "year": 2012,
+          "onset": "2012-04-27",
+          "onset_delay_days": -6,
+          "late_onset": false,
+          "longest_dry_spell_days": 12,
+          "dry_spell_alert": true,
+          "season_rain_mm": 968.0
+        },
+        {
+          "year": 2013,
+          "onset": "2013-06-07",
+          "onset_delay_days": 34,
+          "late_onset": true,
+          "longest_dry_spell_days": 7,
+          "dry_spell_alert": false,
+          "season_rain_mm": 784.0
+        },
+        {
+          "year": 2014,
+          "onset": "2014-04-29",
+          "onset_delay_days": -5,
+          "late_onset": false,
+          "longest_dry_spell_days": 9,
+          "dry_spell_alert": false,
+          "season_rain_mm": 733.0
+        },
+        {
+          "year": 2015,
+          "onset": "2015-06-17",
+          "onset_delay_days": 44,
+          "late_onset": true,
+          "longest_dry_spell_days": 13,
+          "dry_spell_alert": true,
+          "season_rain_mm": 761.0
+        },
+        {
+          "year": 2016,
+          "onset": "2016-06-21",
+          "onset_delay_days": 49,
+          "late_onset": true,
+          "longest_dry_spell_days": 11,
+          "dry_spell_alert": true,
+          "season_rain_mm": 767.0
+        },
+        {
+          "year": 2017,
+          "onset": "2017-05-05",
+          "onset_delay_days": 1,
+          "late_onset": false,
+          "longest_dry_spell_days": 11,
+          "dry_spell_alert": true,
+          "season_rain_mm": 929.0
+        },
+        {
+          "year": 2018,
+          "onset": "2018-04-21",
+          "onset_delay_days": -13,
+          "late_onset": false,
+          "longest_dry_spell_days": 6,
+          "dry_spell_alert": false,
+          "season_rain_mm": 1338.0
+        },
+        {
+          "year": 2019,
+          "onset": "2019-05-04",
+          "onset_delay_days": 0,
+          "late_onset": false,
+          "longest_dry_spell_days": 3,
+          "dry_spell_alert": false,
+          "season_rain_mm": 1719.0
+        },
+        {
+          "year": 2020,
+          "onset": "2020-04-07",
+          "onset_delay_days": -26,
+          "late_onset": false,
+          "longest_dry_spell_days": 6,
+          "dry_spell_alert": false,
+          "season_rain_mm": 2256.0
+        },
+        {
+          "year": 2021,
+          "onset": "2021-04-09",
+          "onset_delay_days": -25,
+          "late_onset": false,
+          "longest_dry_spell_days": 7,
+          "dry_spell_alert": false,
+          "season_rain_mm": 1818.0
+        },
+        {
+          "year": 2022,
+          "onset": "2022-04-20",
+          "onset_delay_days": -14,
+          "late_onset": false,
+          "longest_dry_spell_days": 5,
+          "dry_spell_alert": false,
+          "season_rain_mm": 1700.0
+        },
+        {
+          "year": 2023,
+          "onset": "2023-05-09",
+          "onset_delay_days": 5,
+          "late_onset": false,
+          "longest_dry_spell_days": 5,
+          "dry_spell_alert": false,
+          "season_rain_mm": 1364.0
+        },
+        {
+          "year": 2024,
+          "onset": "2024-05-09",
+          "onset_delay_days": 6,
+          "late_onset": false,
+          "longest_dry_spell_days": 5,
+          "dry_spell_alert": false,
+          "season_rain_mm": 1684.0
+        },
+        {
+          "year": 2025,
+          "onset": "2025-04-03",
+          "onset_delay_days": -31,
+          "late_onset": false,
+          "longest_dry_spell_days": 11,
+          "dry_spell_alert": true,
+          "season_rain_mm": 956.0
+        }
+      ]
+    },
+    "prey_veng": {
+      "slug": "prey_veng",
+      "name_en": "Prey Veng",
+      "name_km": "ព្រៃវែង",
+      "lat": 11.48,
+      "lon": 105.33,
+      "last_data_date": "2026-10-27",
+      "overall": "yellow",
+      "onset": {
+        "level": "green",
+        "date": "2026-05-19",
+        "normal_date": "05-07",
+        "delay_days": 12,
+        "window_start": "2026-05-19",
+        "window_end": "2026-06-09"
+      },
+      "season_check": {
+        "level": "green",
+        "season_rain_mm": 1107.0,
+        "normal_season_rain_mm": 1026.0,
+        "rain_anomaly_pct": 8.0,
+        "soil_moisture_now": 0.91,
+        "soil_moisture_normal": 0.81
+      },
+      "dry_spell": {
+        "level": "yellow",
+        "longest_days": 7
+      },
+      "flood": {
+        "level": "yellow",
+        "recent_max_3day_mm": 62.0,
+        "p95_3day_mm": 51.0,
+        "p99_3day_mm": 85.0
+      },
+      "tips": [
+        "save_water",
+        "short_duration_variety",
+        "drainage",
+        "raise_seedbed"
+      ],
+      "monthly": [
+        {
+          "month": 1,
+          "normal_mm": 11.3,
+          "this_year_mm": 3.1,
+          "partial": false
+        },
+        {
+          "month": 2,
+          "normal_mm": 8.5,
+          "this_year_mm": 22.2,
+          "partial": false
+        },
+        {
+          "month": 3,
+          "normal_mm": 22.4,
+          "this_year_mm": 6.6,
+          "partial": false
+        },
+        {
+          "month": 4,
+          "normal_mm": 48.0,
+          "this_year_mm": 4.7,
+          "partial": false
+        },
+        {
+          "month": 5,
+          "normal_mm": 141.4,
+          "this_year_mm": 134.3,
+          "partial": false
+        },
+        {
+          "month": 6,
+          "normal_mm": 190.1,
+          "this_year_mm": 98.0,
+          "partial": false
+        },
+        {
+          "month": 7,
+          "normal_mm": 169.4,
+          "this_year_mm": 214.1,
+          "partial": false
+        },
+        {
+          "month": 8,
+          "normal_mm": 161.1,
+          "this_year_mm": 106.3,
+          "partial": false
+        },
+        {
+          "month": 9,
+          "normal_mm": 181.3,
+          "this_year_mm": 304.6,
+          "partial": false
+        },
+        {
+          "month": 10,
+          "normal_mm": 196.3,
+          "this_year_mm": 249.9,
+          "partial": true
+        },
+        {
+          "month": 11,
+          "normal_mm": 101.1,
+          "this_year_mm": null,
+          "partial": false
+        },
+        {
+          "month": 12,
+          "normal_mm": 29.5,
+          "this_year_mm": null,
+          "partial": false
+        }
+      ],
+      "backtest": [
+        {
+          "year": 2000,
+          "onset": "2000-05-03",
+          "onset_delay_days": -3,
+          "late_onset": false,
+          "longest_dry_spell_days": 4,
+          "dry_spell_alert": false,
+          "season_rain_mm": 1466.0
+        },
+        {
+          "year": 2001,
+          "onset": "2001-05-14",
+          "onset_delay_days": 7,
+          "late_onset": false,
+          "longest_dry_spell_days": 11,
+          "dry_spell_alert": true,
+          "season_rain_mm": 1127.0
+        },
+        {
+          "year": 2002,
+          "onset": "2002-05-12",
+          "onset_delay_days": 5,
+          "late_onset": false,
+          "longest_dry_spell_days": 7,
+          "dry_spell_alert": false,
+          "season_rain_mm": 713.0
+        },
+        {
+          "year": 2003,
+          "onset": "2003-05-06",
+          "onset_delay_days": -1,
+          "late_onset": false,
+          "longest_dry_spell_days": 11,
+          "dry_spell_alert": true,
+          "season_rain_mm": 1004.0
+        },
+        {
+          "year": 2004,
+          "onset": "2004-05-11",
+          "onset_delay_days": 5,
+          "late_onset": false,
+          "longest_dry_spell_days": 7,
+          "dry_spell_alert": false,
+          "season_rain_mm": 1148.0
+        },
+        {
+          "year": 2005,
+          "onset": "2005-05-10",
+          "onset_delay_days": 3,
+          "late_onset": false,
+          "longest_dry_spell_days": 7,
+          "dry_spell_alert": false,
+          "season_rain_mm": 887.0
+        },
+        {
+          "year": 2006,
+          "onset": "2006-04-27",
+          "onset_delay_days": -10,
+          "late_onset": false,
+          "longest_dry_spell_days": 6,
+          "dry_spell_alert": false,
+          "season_rain_mm": 1008.0
+        },
+        {
+          "year": 2007,
+          "onset": "2007-05-09",
+          "onset_delay_days": 2,
+          "late_onset": false,
+          "longest_dry_spell_days": 4,
+          "dry_spell_alert": false,
+          "season_rain_mm": 1095.0
+        },
+        {
+          "year": 2008,
+          "onset": "2008-04-28",
+          "onset_delay_days": -8,
+          "late_onset": false,
+          "longest_dry_spell_days": 5,
+          "dry_spell_alert": false,
+          "season_rain_mm": 995.0
+        },
+        {
+          "year": 2009,
+          "onset": "2009-04-26",
+          "onset_delay_days": -11,
+          "late_onset": false,
+          "longest_dry_spell_days": 11,
+          "dry_spell_alert": true,
+          "season_rain_mm": 838.0
+        },
+        {
+          "year": 2010,
+          "onset": "2010-06-09",
+          "onset_delay_days": 33,
+          "late_onset": true,
+          "longest_dry_spell_days": 8,
+          "dry_spell_alert": false,
+          "season_rain_mm": 893.0
+        },
+        {
+          "year": 2011,
+          "onset": "2011-04-19",
+          "onset_delay_days": -18,
+          "late_onset": false,
+          "longest_dry_spell_days": 6,
+          "dry_spell_alert": false,
+          "season_rain_mm": 987.0
+        },
+        {
+          "year": 2012,
+          "onset": "2012-04-21",
+          "onset_delay_days": -15,
+          "late_onset": false,
+          "longest_dry_spell_days": 13,
+          "dry_spell_alert": true,
+          "season_rain_mm": 888.0
+        },
+        {
+          "year": 2013,
+          "onset": "2013-07-17",
+          "onset_delay_days": 71,
+          "late_onset": true,
+          "longest_dry_spell_days": 12,
+          "dry_spell_alert": true,
+          "season_rain_mm": 584.0
+        },
+        {
+          "year": 2014,
+          "onset": "2014-06-13",
+          "onset_delay_days": 37,
+          "late_onset": true,
+          "longest_dry_spell_days": 10,
+          "dry_spell_alert": true,
+          "season_rain_mm": 562.0
+        },
+        {
+          "year": 2015,
+          "onset": "2015-08-02",
+          "onset_delay_days": 87,
+          "late_onset": true,
+          "longest_dry_spell_days": 11,
+          "dry_spell_alert": true,
+          "season_rain_mm": 595.0
+        },
+        {
+          "year": 2016,
+          "onset": "2016-09-29",
+          "onset_delay_days": 146,
+          "late_onset": true,
+          "longest_dry_spell_days": 19,
+          "dry_spell_alert": true,
+          "season_rain_mm": 363.0
+        },
+        {
+          "year": 2017,
+          "onset": "2017-05-05",
+          "onset_delay_days": -2,
+          "late_onset": false,
+          "longest_dry_spell_days": 8,
+          "dry_spell_alert": false,
+          "season_rain_mm": 765.0
+        },
+        {
+          "year": 2018,
+          "onset": "2018-04-30",
+          "onset_delay_days": -7,
+          "late_onset": false,
+          "longest_dry_spell_days": 7,
+          "dry_spell_alert": false,
+          "season_rain_mm": 1176.0
+        },
+        {
+          "year": 2019,
+          "onset": "2019-05-04",
+          "onset_delay_days": -3,
+          "late_onset": false,
+          "longest_dry_spell_days": 7,
+          "dry_spell_alert": false,
+          "season_rain_mm": 1426.0
+        },
+        {
+          "year": 2020,
+          "onset": "2020-04-25",
+          "onset_delay_days": -11,
+          "late_onset": false,
+          "longest_dry_spell_days": 7,
+          "dry_spell_alert": false,
+          "season_rain_mm": 2226.0
+        },
+        {
+          "year": 2021,
+          "onset": "2021-04-19",
+          "onset_delay_days": -18,
+          "late_onset": false,
+          "longest_dry_spell_days": 11,
+          "dry_spell_alert": true,
+          "season_rain_mm": 1575.0
+        },
+        {
+          "year": 2022,
+          "onset": "2022-04-29",
+          "onset_delay_days": -8,
+          "late_onset": false,
+          "longest_dry_spell_days": 3,
+          "dry_spell_alert": false,
+          "season_rain_mm": 1709.0
+        },
+        {
+          "year": 2023,
+          "onset": "2023-05-09",
+          "onset_delay_days": 2,
+          "late_onset": false,
+          "longest_dry_spell_days": 4,
+          "dry_spell_alert": false,
+          "season_rain_mm": 1202.0
+        },
+        {
+          "year": 2024,
+          "onset": "2024-05-08",
+          "onset_delay_days": 2,
+          "late_onset": false,
+          "longest_dry_spell_days": 4,
+          "dry_spell_alert": false,
+          "season_rain_mm": 1082.0
+        },
+        {
+          "year": 2025,
+          "onset": "2025-08-14",
+          "onset_delay_days": 99,
+          "late_onset": true,
+          "longest_dry_spell_days": 9,
+          "dry_spell_alert": false,
+          "season_rain_mm": 716.0
+        }
+      ]
+    },
+    "battambang": {
+      "slug": "battambang",
+      "name_en": "Battambang",
+      "name_km": "បាត់ដំបង",
+      "lat": 13.1,
+      "lon": 103.2,
+      "last_data_date": "2026-10-27",
+      "overall": "red",
+      "onset": {
+        "level": "red",
+        "date": "2026-05-04",
+        "normal_date": "04-18",
+        "delay_days": 16,
+        "window_start": "2026-05-04",
+        "window_end": "2026-05-25"
+      },
+      "season_check": {
+        "level": "yellow",
+        "season_rain_mm": 2026.0,
+        "normal_season_rain_mm": 1609.0,
+        "rain_anomaly_pct": 26.0,
+        "soil_moisture_now": 0.83,
+        "soil_moisture_normal": 0.93
+      },
+      "dry_spell": {
+        "level": "green",
+        "longest_days": 3
+      },
+      "flood": {
+        "level": "green",
+        "recent_max_3day_mm": 51.0,
+        "p95_3day_mm": 73.0,
+        "p99_3day_mm": 108.0
+      },
+      "tips": [
+        "delay_transplanting",
+        "short_duration_variety",
+        "drainage",
+        "raise_seedbed"
+      ],
+      "monthly": [
+        {
+          "month": 1,
+          "normal_mm": 18.7,
+          "this_year_mm": 7.1,
+          "partial": false
+        },
+        {
+          "month": 2,
+          "normal_mm": 33.0,
+          "this_year_mm": 33.0,
+          "partial": false
+        },
+        {
+          "month": 3,
+          "normal_mm": 65.5,
+          "this_year_mm": 46.2,
+          "partial": false
+        },
+        {
+          "month": 4,
+          "normal_mm": 102.9,
+          "this_year_mm": 32.5,
+          "partial": false
+        },
+        {
+          "month": 5,
+          "normal_mm": 198.0,
+          "this_year_mm": 216.8,
+          "partial": false
+        },
+        {
+          "month": 6,
+          "normal_mm": 271.2,
+          "this_year_mm": 180.7,
+          "partial": false
+        },
+        {
+          "month": 7,
+          "normal_mm": 318.7,
+          "this_year_mm": 543.5,
+          "partial": false
+        },
+        {
+          "month": 8,
+          "normal_mm": 301.6,
+          "this_year_mm": 395.0,
+          "partial": false
+        },
+        {
+          "month": 9,
+          "normal_mm": 328.9,
+          "this_year_mm": 486.1,
+          "partial": false
+        },
+        {
+          "month": 10,
+          "normal_mm": 201.9,
+          "this_year_mm": 204.2,
+          "partial": true
+        },
+        {
+          "month": 11,
+          "normal_mm": 53.2,
+          "this_year_mm": null,
+          "partial": false
+        },
+        {
+          "month": 12,
+          "normal_mm": 9.6,
+          "this_year_mm": null,
+          "partial": false
+        }
+      ],
+      "backtest": [
+        {
+          "year": 2000,
+          "onset": "2000-04-10",
+          "onset_delay_days": -7,
+          "late_onset": false,
+          "longest_dry_spell_days": 3,
+          "dry_spell_alert": false,
+          "season_rain_mm": 1992.0
+        },
+        {
+          "year": 2001,
+          "onset": "2001-04-26",
+          "onset_delay_days": 8,
+          "late_onset": false,
+          "longest_dry_spell_days": 4,
+          "dry_spell_alert": false,
+          "season_rain_mm": 1662.0
+        },
+        {
+          "year": 2002,
+          "onset": "2002-04-03",
+          "onset_delay_days": -15,
+          "late_onset": false,
+          "longest_dry_spell_days": 13,
+          "dry_spell_alert": true,
+          "season_rain_mm": 1563.0
+        },
+        {
+          "year": 2003,
+          "onset": "2003-04-24",
+          "onset_delay_days": 6,
+          "late_onset": false,
+          "longest_dry_spell_days": 5,
+          "dry_spell_alert": false,
+          "season_rain_mm": 1638.0
+        },
+        {
+          "year": 2004,
+          "onset": "2004-04-28",
+          "onset_delay_days": 11,
+          "late_onset": false,
+          "longest_dry_spell_days": 7,
+          "dry_spell_alert": false,
+          "season_rain_mm": 1639.0
+        },
+        {
+          "year": 2005,
+          "onset": "2005-05-09",
+          "onset_delay_days": 21,
+          "late_onset": true,
+          "longest_dry_spell_days": 6,
+          "dry_spell_alert": false,
+          "season_rain_mm": 1568.0
+        },
+        {
+          "year": 2006,
+          "onset": "2006-04-07",
+          "onset_delay_days": -11,
+          "late_onset": false,
+          "longest_dry_spell_days": 4,
+          "dry_spell_alert": false,
+          "season_rain_mm": 2135.0
+        },
+        {
+          "year": 2007,
+          "onset": "2007-04-08",
+          "onset_delay_days": -10,
+          "late_onset": false,
+          "longest_dry_spell_days": 4,
+          "dry_spell_alert": false,
+          "season_rain_mm": 1530.0
+        },
+        {
+          "year": 2008,
+          "onset": "2008-04-05",
+          "onset_delay_days": -12,
+          "late_onset": false,
+          "longest_dry_spell_days": 5,
+          "dry_spell_alert": false,
+          "season_rain_mm": 1382.0
+        },
+        {
+          "year": 2009,
+          "onset": "2009-04-10",
+          "onset_delay_days": -8,
+          "late_onset": false,
+          "longest_dry_spell_days": 5,
+          "dry_spell_alert": false,
+          "season_rain_mm": 1240.0
+        },
+        {
+          "year": 2010,
+          "onset": "2010-04-16",
+          "onset_delay_days": -2,
+          "late_onset": false,
+          "longest_dry_spell_days": 5,
+          "dry_spell_alert": false,
+          "season_rain_mm": 1153.0
+        },
+        {
+          "year": 2011,
+          "onset": "2011-04-19",
+          "onset_delay_days": 1,
+          "late_onset": false,
+          "longest_dry_spell_days": 5,
+          "dry_spell_alert": false,
+          "season_rain_mm": 1707.0
+        },
+        {
+          "year": 2012,
+          "onset": "2012-04-07",
+          "onset_delay_days": -10,
+          "late_onset": false,
+          "longest_dry_spell_days": 5,
+          "dry_spell_alert": false,
+          "season_rain_mm": 1580.0
+        },
+        {
+          "year": 2013,
+          "onset": "2013-04-03",
+          "onset_delay_days": -15,
+          "late_onset": false,
+          "longest_dry_spell_days": 4,
+          "dry_spell_alert": false,
+          "season_rain_mm": 1980.0
+        },
+        {
+          "year": 2014,
+          "onset": "2014-05-13",
+          "onset_delay_days": 25,
+          "late_onset": true,
+          "longest_dry_spell_days": 4,
+          "dry_spell_alert": false,
+          "season_rain_mm": 1739.0
+        },
+        {
+          "year": 2015,
+          "onset": "2015-05-28",
+          "onset_delay_days": 40,
+          "late_onset": true,
+          "longest_dry_spell_days": 7,
+          "dry_spell_alert": false,
+          "season_rain_mm": 1549.0
+        },
+        {
+          "year": 2016,
+          "onset": "2016-04-30",
+          "onset_delay_days": 13,
+          "late_onset": false,
+          "longest_dry_spell_days": 7,
+          "dry_spell_alert": false,
+          "season_rain_mm": 995.0
+        },
+        {
+          "year": 2017,
+          "onset": "2017-05-10",
+          "onset_delay_days": 22,
+          "late_onset": true,
+          "longest_dry_spell_days": 7,
+          "dry_spell_alert": false,
+          "season_rain_mm": 1368.0
+        },
+        {
+          "year": 2018,
+          "onset": "2018-04-27",
+          "onset_delay_days": 9,
+          "late_onset": false,
+          "longest_dry_spell_days": 7,
+          "dry_spell_alert": false,
+          "season_rain_mm": 1189.0
+        },
+        {
+          "year": 2019,
+          "onset": "2019-05-11",
+          "onset_delay_days": 23,
+          "late_onset": true,
+          "longest_dry_spell_days": 6,
+          "dry_spell_alert": false,
+          "season_rain_mm": 1345.0
+        },
+        {
+          "year": 2020,
+          "onset": "2020-04-04",
+          "onset_delay_days": -13,
+          "late_onset": false,
+          "longest_dry_spell_days": 5,
+          "dry_spell_alert": false,
+          "season_rain_mm": 1975.0
+        },
+        {
+          "year": 2021,
+          "onset": "2021-04-04",
+          "onset_delay_days": -14,
+          "late_onset": false,
+          "longest_dry_spell_days": 4,
+          "dry_spell_alert": false,
+          "season_rain_mm": 2195.0
+        },
+        {
+          "year": 2022,
+          "onset": "2022-04-17",
+          "onset_delay_days": -1,
+          "late_onset": false,
+          "longest_dry_spell_days": 8,
+          "dry_spell_alert": false,
+          "season_rain_mm": 2180.0
+        },
+        {
+          "year": 2023,
+          "onset": "2023-04-25",
+          "onset_delay_days": 7,
+          "late_onset": false,
+          "longest_dry_spell_days": 6,
+          "dry_spell_alert": false,
+          "season_rain_mm": 1447.0
+        },
+        {
+          "year": 2024,
+          "onset": "2024-05-07",
+          "onset_delay_days": 20,
+          "late_onset": true,
+          "longest_dry_spell_days": 3,
+          "dry_spell_alert": false,
+          "season_rain_mm": 1616.0
+        },
+        {
+          "year": 2025,
+          "onset": "2025-04-09",
+          "onset_delay_days": -9,
+          "late_onset": false,
+          "longest_dry_spell_days": 8,
+          "dry_spell_alert": false,
+          "season_rain_mm": 1760.0
+        }
+      ]
+    },
+    "kampong_thom": {
+      "slug": "kampong_thom",
+      "name_en": "Kampong Thom",
+      "name_km": "កំពង់ធំ",
+      "lat": 12.71,
+      "lon": 104.89,
+      "last_data_date": "2026-10-27",
+      "overall": "red",
+      "onset": {
+        "level": "red",
+        "date": "2026-07-04",
+        "normal_date": "05-11",
+        "delay_days": 54,
+        "window_start": "2026-07-04",
+        "window_end": "2026-07-25"
+      },
+      "season_check": {
+        "level": "green",
+        "season_rain_mm": 1003.0,
+        "normal_season_rain_mm": 1011.0,
+        "rain_anomaly_pct": -1.0,
+        "soil_moisture_now": 0.9,
+        "soil_moisture_normal": 0.83
+      },
+      "dry_spell": {
+        "level": "yellow",
+        "longest_days": 8
+      },
+      "flood": {
+        "level": "yellow",
+        "recent_max_3day_mm": 61.0,
+        "p95_3day_mm": 49.0,
+        "p99_3day_mm": 76.0
+      },
+      "tips": [
+        "delay_transplanting",
+        "short_duration_variety",
+        "save_water",
+        "drainage",
+        "raise_seedbed"
+      ],
+      "monthly": [
+        {
+          "month": 1,
+          "normal_mm": 12.1,
+          "this_year_mm": 7.3,
+          "partial": false
+        },
+        {
+          "month": 2,
+          "normal_mm": 14.9,
+          "this_year_mm": 21.8,
+          "partial": false
+        },
+        {
+          "month": 3,
+          "normal_mm": 36.0,
+          "this_year_mm": 21.9,
+          "partial": false
+        },
+        {
+          "month": 4,
+          "normal_mm": 58.5,
+          "this_year_mm": 11.3,
+          "partial": false
+        },
+        {
+          "month": 5,
+          "normal_mm": 125.7,
+          "this_year_mm": 112.3,
+          "partial": false
+        },
+        {
+          "month": 6,
+          "normal_mm": 176.7,
+          "this_year_mm": 86.9,
+          "partial": false
+        },
+        {
+          "month": 7,
+          "normal_mm": 186.7,
+          "this_year_mm": 201.9,
+          "partial": false
+        },
+        {
+          "month": 8,
+          "normal_mm": 193.5,
+          "this_year_mm": 143.0,
+          "partial": false
+        },
+        {
+          "month": 9,
+          "normal_mm": 185.2,
+          "this_year_mm": 242.1,
+          "partial": false
+        },
+        {
+          "month": 10,
+          "normal_mm": 152.7,
+          "this_year_mm": 216.7,
+          "partial": true
+        },
+        {
+          "month": 11,
+          "normal_mm": 61.8,
+          "this_year_mm": null,
+          "partial": false
+        },
+        {
+          "month": 12,
+          "normal_mm": 18.9,
+          "this_year_mm": null,
+          "partial": false
+        }
+      ],
+      "backtest": [
+        {
+          "year": 2000,
+          "onset": "2000-04-10",
+          "onset_delay_days": -30,
+          "late_onset": false,
+          "longest_dry_spell_days": 2,
+          "dry_spell_alert": false,
+          "season_rain_mm": 1684.0
+        },
+        {
+          "year": 2001,
+          "onset": "2001-05-11",
+          "onset_delay_days": 0,
+          "late_onset": false,
+          "longest_dry_spell_days": 4,
+          "dry_spell_alert": false,
+          "season_rain_mm": 1390.0
+        },
+        {
+          "year": 2002,
+          "onset": "2002-04-25",
+          "onset_delay_days": -16,
+          "late_onset": false,
+          "longest_dry_spell_days": 4,
+          "dry_spell_alert": false,
+          "season_rain_mm": 983.0
+        },
+        {
+          "year": 2003,
+          "onset": "2003-05-12",
+          "onset_delay_days": 1,
+          "late_onset": false,
+          "longest_dry_spell_days": 4,
+          "dry_spell_alert": false,
+          "season_rain_mm": 1192.0
+        },
+        {
+          "year": 2004,
+          "onset": "2004-05-17",
+          "onset_delay_days": 7,
+          "late_onset": false,
+          "longest_dry_spell_days": 3,
+          "dry_spell_alert": false,
+          "season_rain_mm": 1205.0
+        },
+        {
+          "year": 2005,
+          "onset": "2005-05-09",
+          "onset_delay_days": -2,
+          "late_onset": false,
+          "longest_dry_spell_days": 6,
+          "dry_spell_alert": false,
+          "season_rain_mm": 1134.0
+        },
+        {
+          "year": 2006,
+          "onset": "2006-04-28",
+          "onset_delay_days": -13,
+          "late_onset": false,
+          "longest_dry_spell_days": 4,
+          "dry_spell_alert": false,
+          "season_rain_mm": 1362.0
+        },
+        {
+          "year": 2007,
+          "onset": "2007-04-09",
+          "onset_delay_days": -32,
+          "late_onset": false,
+          "longest_dry_spell_days": 4,
+          "dry_spell_alert": false,
+          "season_rain_mm": 955.0
+        },
+        {
+          "year": 2008,
+          "onset": "2008-05-11",
+          "onset_delay_days": 1,
+          "late_onset": false,
+          "longest_dry_spell_days": 8,
+          "dry_spell_alert": false,
+          "season_rain_mm": 873.0
+        },
+        {
+          "year": 2009,
+          "onset": "2009-04-26",
+          "onset_delay_days": -15,
+          "late_onset": false,
+          "longest_dry_spell_days": 12,
+          "dry_spell_alert": true,
+          "season_rain_mm": 656.0
+        },
+        {
+          "year": 2010,
+          "onset": "2010-06-08",
+          "onset_delay_days": 28,
+          "late_onset": true,
+          "longest_dry_spell_days": 8,
+          "dry_spell_alert": false,
+          "season_rain_mm": 796.0
+        },
+        {
+          "year": 2011,
+          "onset": "2011-04-19",
+          "onset_delay_days": -22,
+          "late_onset": false,
+          "longest_dry_spell_days": 4,
+          "dry_spell_alert": false,
+          "season_rain_mm": 1031.0
+        },
+        {
+          "year": 2012,
+          "onset": "2012-05-01",
+          "onset_delay_days": -9,
+          "late_onset": false,
+          "longest_dry_spell_days": 7,
+          "dry_spell_alert": false,
+          "season_rain_mm": 845.0
+        },
+        {
+          "year": 2013,
+          "onset": "2013-06-07",
+          "onset_delay_days": 27,
+          "late_onset": true,
+          "longest_dry_spell_days": 5,
+          "dry_spell_alert": false,
+          "season_rain_mm": 838.0
+        },
+        {
+          "year": 2014,
+          "onset": "2014-06-06",
+          "onset_delay_days": 26,
+          "late_onset": true,
+          "longest_dry_spell_days": 6,
+          "dry_spell_alert": false,
+          "season_rain_mm": 846.0
+        },
+        {
+          "year": 2015,
+          "onset": "2015-05-30",
+          "onset_delay_days": 19,
+          "late_onset": true,
+          "longest_dry_spell_days": 12,
+          "dry_spell_alert": true,
+          "season_rain_mm": 793.0
+        },
+        {
+          "year": 2016,
+          "onset": "2016-10-23",
+          "onset_delay_days": 166,
+          "late_onset": true,
+          "longest_dry_spell_days": 23,
+          "dry_spell_alert": true,
+          "season_rain_mm": 217.0
+        },
+        {
+          "year": 2017,
+          "onset": "2017-09-24",
+          "onset_delay_days": 136,
+          "late_onset": true,
+          "longest_dry_spell_days": 11,
+          "dry_spell_alert": true,
+          "season_rain_mm": 737.0
+        },
+        {
+          "year": 2018,
+          "onset": "2018-04-30",
+          "onset_delay_days": -11,
+          "late_onset": false,
+          "longest_dry_spell_days": 11,
+          "dry_spell_alert": true,
+          "season_rain_mm": 920.0
+        },
+        {
+          "year": 2019,
+          "onset": "2019-05-04",
+          "onset_delay_days": -7,
+          "late_onset": false,
+          "longest_dry_spell_days": 7,
+          "dry_spell_alert": false,
+          "season_rain_mm": 1085.0
+        },
+        {
+          "year": 2020,
+          "onset": "2020-04-25",
+          "onset_delay_days": -15,
+          "late_onset": false,
+          "longest_dry_spell_days": 6,
+          "dry_spell_alert": false,
+          "season_rain_mm": 1678.0
+        },
+        {
+          "year": 2021,
+          "onset": "2021-04-23",
+          "onset_delay_days": -18,
+          "late_onset": false,
+          "longest_dry_spell_days": 8,
+          "dry_spell_alert": false,
+          "season_rain_mm": 1353.0
+        },
+        {
+          "year": 2022,
+          "onset": "2022-05-17",
+          "onset_delay_days": 6,
+          "late_onset": false,
+          "longest_dry_spell_days": 4,
+          "dry_spell_alert": false,
+          "season_rain_mm": 1725.0
+        },
+        {
+          "year": 2023,
+          "onset": "2023-05-28",
+          "onset_delay_days": 17,
+          "late_onset": true,
+          "longest_dry_spell_days": 8,
+          "dry_spell_alert": false,
+          "season_rain_mm": 855.0
+        },
+        {
+          "year": 2024,
+          "onset": "2024-05-23",
+          "onset_delay_days": 13,
+          "late_onset": false,
+          "longest_dry_spell_days": 5,
+          "dry_spell_alert": false,
+          "season_rain_mm": 756.0
+        },
+        {
+          "year": 2025,
+          "onset": "2025-08-10",
+          "onset_delay_days": 91,
+          "late_onset": true,
+          "longest_dry_spell_days": 17,
+          "dry_spell_alert": true,
+          "season_rain_mm": 625.0
+        }
+      ]
+    }
+  }
+}
