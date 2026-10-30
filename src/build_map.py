@@ -1,29 +1,36 @@
-"""Build the bilingual (Khmer/English) Folium map from data/processed/summary.json.
+"""Build the Field Shift KH web page (docs/index.html) from data/processed/summary.json.
 
 Usage:
     python src/build_map.py    # writes docs/index.html (served by GitHub Pages)
 
-Khmer text is a draft: have a native speaker check it before the pitch.
+The page has two parts:
+  - the base map, built here with Folium and locked to Cambodia
+  - everything interactive (coloured province shapes, map controls, side panel), drawn in the
+    browser by docs/assets/app.js and styled by docs/assets/style.css, from the province results
+    and shapes (data/processed/provinces.geojson) embedded in the page
+
+Khmer text (here and in app.js) is a draft: have a native speaker check it before the pitch.
 Partly generated with AI assistance (Claude Code); reviewed by the team.
 """
 
+import hashlib
 import json
-from datetime import date
 
 import folium
 
 from config import PROCESSED_DIR, ROOT
+from rotations import HARVEST_LABELS, PRIORITIES, ROTATIONS
 
-OUT = ROOT / "docs" / "index.html"
+DOCS = ROOT / "docs"
+OUT = DOCS / "index.html"
+ASSETS = ["assets/style.css", "assets/app.js"]
+REPO_URL = "https://github.com/siengphalsithykun-ctrl/field-shift-kh"
 
-COLORS = {"green": "#2e7d32", "yellow": "#f2a900", "red": "#c62828"}
-LEVEL_TEXT = {
-    "green": ("Normal", "ធម្មតា"),
-    "yellow": ("Watch", "ប្រុងប្រយ័ត្ន"),
-    "red": ("Warning", "ព្រមាន"),
-}
-MONTHS_EN = "Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec".split()
-MONTHS_KM = "មករា កុម្ភៈ មីនា មេសា ឧសភា មិថុនា កក្កដា សីហា កញ្ញា តុលា វិច្ឆិកា ធ្នូ".split()
+# Light grey base map without labels, so the coloured provinces stand out (free, no API key).
+TILES = "https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}"
+TILES_ATTR = "&copy; Esri | Boundaries: geoBoundaries (OSM, ODbL)"
+SHAPES = PROCESSED_DIR / "provinces.geojson"
+BOUNDS_PAD_DEG = 0.6  # how far past Cambodia's edge the map may be panned
 
 TIPS = {
     "delay_transplanting": (
@@ -52,201 +59,89 @@ TIPS = {
     ),
 }
 
-
-def bi(en, km):
-    """Text in both languages; the page's language switch shows one of them."""
-    return f'<span class="en">{en}</span><span class="km">{km}</span>'
-
-
-def chip(level):
-    en, km = LEVEL_TEXT[level]
-    text = "#1d2329" if level == "yellow" else "#fff"
-    return f'<span class="chip" style="background:{COLORS[level]};color:{text}">{bi(en, km)}</span>'
-
-
-def fmt_date(iso):
-    if iso is None:
-        return bi("not yet", "មិនទាន់")
-    d = date.fromisoformat(iso)
-    return bi(f"{d.day} {MONTHS_EN[d.month - 1]}", f"{d.day} {MONTHS_KM[d.month - 1]}")
-
-
-def fmt_month_day(md):
-    m, d = (int(x) for x in md.split("-"))
-    return bi(f"{d} {MONTHS_EN[m - 1]}", f"{d} {MONTHS_KM[m - 1]}")
-
-
-def monthly_chart(monthly, level):
-    """Small inline SVG: normal monthly rain (grey) vs this year (status colour)."""
-    w, h, pad = 300, 96, 14
-    top = max(max(m["normal_mm"], m["this_year_mm"] or 0) for m in monthly) or 1
-    slot = (w - 4) / 12
-    bars = []
-    for i, m in enumerate(monthly):
-        x = 2 + i * slot
-        nh = (h - pad) * m["normal_mm"] / top
-        bars.append(f'<rect x="{x + 2:.1f}" y="{h - pad - nh:.1f}" width="{slot / 2 - 2:.1f}" height="{nh:.1f}" fill="#b8bec6"/>')
-        if m["this_year_mm"] is not None:
-            th = (h - pad) * m["this_year_mm"] / top
-            opacity = 0.45 if m["partial"] else 1
-            bars.append(
-                f'<rect x="{x + slot / 2:.1f}" y="{h - pad - th:.1f}" width="{slot / 2 - 2:.1f}" '
-                f'height="{th:.1f}" fill="{COLORS[level]}" opacity="{opacity}"/>'
-            )
-        bars.append(f'<text x="{x + slot / 2:.1f}" y="{h - 2}" text-anchor="middle">{MONTHS_EN[i][0]}</text>')
-    return f'<svg viewBox="0 0 {w} {h}" class="chart" role="img" aria-label="Monthly rainfall">{"".join(bars)}</svg>'
-
-
-def popup_html(p, year):
-    on, sc, ds, fl = p["onset"], p["season_check"], p["dry_spell"], p["flood"]
-
-    if on["delay_days"] is None:
-        delay = bi("Onset not confirmed yet", "មិនទាន់បញ្ជាក់ការចាប់ផ្តើមរដូវវស្សា")
-    elif on["delay_days"] > 0:
-        delay = bi(f"{on['delay_days']} days later than normal", f"យឺតជាងធម្មតា {on['delay_days']} ថ្ងៃ")
-    else:
-        delay = bi(f"{-on['delay_days']} days earlier than normal", f"លឿនជាងធម្មតា {-on['delay_days']} ថ្ងៃ")
-
-    anomaly = sc["rain_anomaly_pct"]
-    late_years = [str(b["year"]) for b in p["backtest"] if b["late_onset"]]
-    tips = "".join(f"<li>{bi(*TIPS[t])}</li>" for t in p["tips"])
-
-    return f"""
-<div class="popup">
-  <div class="head">
-    <div><b>{p['name_km']}</b> · {p['name_en']}</div>
-    {chip(p['overall'])}
-  </div>
-
-  <h4>{bi('1. Season check', '១. ពិនិត្យរដូវ')} {chip(sc['level'])}</h4>
-  <p>{bi(f"Rain since 1 May: <b>{sc['season_rain_mm']:.0f} mm</b> (normal {sc['normal_season_rain_mm']:.0f} mm, <b>{anomaly:+.0f}%</b>)",
-         f"ទឹកភ្លៀងចាប់ពី ១ ឧសភា៖ <b>{sc['season_rain_mm']:.0f} មម</b> (ធម្មតា {sc['normal_season_rain_mm']:.0f} មម, <b>{anomaly:+.0f}%</b>)")}<br>
-  {bi(f"Soil moisture (last 30 days): {sc['soil_moisture_now']:.2f} (normal {sc['soil_moisture_normal']:.2f})",
-      f"សំណើមដី (៣០ថ្ងៃចុងក្រោយ)៖ {sc['soil_moisture_now']:.2f} (ធម្មតា {sc['soil_moisture_normal']:.2f})")}</p>
-  {monthly_chart(p['monthly'], sc['level'])}
-  <div class="legend-row"><span class="sw" style="background:#b8bec6"></span>{bi('Normal 2000–2025', 'ធម្មតា ២០០០–២០២៥')}
-    <span class="sw" style="background:{COLORS[sc['level']]}"></span>{year}</div>
-
-  <h4>{bi('2. Planting window', '២. ពេលវេលាដាំសមស្រប')} {chip(on['level'])}</h4>
-  <p>{bi('Monsoon onset', 'ការចាប់ផ្តើមរដូវវស្សា')}: <b>{fmt_date(on['date'])}</b>
-     ({bi('normal', 'ធម្មតា')} {fmt_month_day(on['normal_date'])}) · {delay}<br>
-  {bi('Recommended sowing/transplanting', 'ពេលសាបព្រោះ/ស្ទូងដែលណែនាំ')}: <b>{fmt_date(on['window_start'])} – {fmt_date(on['window_end'])}</b></p>
-
-  <h4>{bi('3. Risk alerts', '៣. ការព្រមានហានិភ័យ')}</h4>
-  <p>{chip(ds['level'])} {bi(f"Dry spell: longest {ds['longest_days']} dry days in a row this season",
-                              f"រាំងស្ងួត៖ យូរបំផុត {ds['longest_days']} ថ្ងៃជាប់គ្នា ក្នុងរដូវនេះ")}<br>
-  {chip(fl['level'])} {bi(f"Flood: heaviest 3-day rain in last 30 days {fl['recent_max_3day_mm']:.0f} mm (alert above {fl['p95_3day_mm']:.0f} mm)",
-                           f"ទឹកជំនន់៖ ភ្លៀង៣ថ្ងៃខ្លាំងបំផុត ក្នុង៣០ថ្ងៃចុងក្រោយ {fl['recent_max_3day_mm']:.0f} មម (ព្រមានលើស {fl['p95_3day_mm']:.0f} មម)")}</p>
-
-  <h4>{bi('4. What to do', '៤. អ្វីដែលគួរធ្វើ')}</h4>
-  <ul>{tips}</ul>
-
-  <p class="small">{bi(f"Back-test: these rules would have flagged a late monsoon in {', '.join(late_years)}.",
-                       f"ការសាកល្បងលើអតីតកាល៖ ច្បាប់ទាំងនេះនឹងព្រមានពីរដូវវស្សាយឺតក្នុងឆ្នាំ {', '.join(late_years)}។")}
-  {bi(f"Data up to {p['last_data_date']}.", f"ទិន្នន័យដល់ថ្ងៃ {p['last_data_date']}។")}</p>
-</div>"""
-
-
-PAGE_CSS = """
+HEAD = """
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Planting alerts and crop-rotation options for Cambodian rice farmers from NASA Earth data (Khmer/English).">
+<meta name="generator" content="Python, Folium; code partly generated with AI assistance (Claude Code, Anthropic)">
+<meta name="ai-disclosure" content="Code and data processing partly generated with AI assistance (Claude Code) and reviewed by the team. No AI-generated images, audio or video. No NASA branding used.">
+<title>Field Shift KH</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Khmer:wght@400;600&display=swap" rel="stylesheet">
-<style>
-  html, body { font-family: system-ui, -apple-system, "Segoe UI", "Noto Sans Khmer", sans-serif; }
-  body:not(.lang-km) .km, body.lang-km .en { display: none; }
-  .panel { position: fixed; z-index: 650; /* above markers, below Leaflet pop-ups (700) */ background: #fff; border-radius: 10px;
-           box-shadow: 0 2px 10px rgba(0,0,0,.2); padding: 10px 14px; color: #1d2329; }
-  .title { top: 12px; left: 56px; max-width: min(420px, calc(100vw - 80px)); }
-  .title h1 { font-size: 18px; margin: 0 0 2px; }
-  .title p { font-size: 13px; margin: 0; color: #4a5560; }
-  .lang { margin-top: 8px; }
-  .lang button { border: 1px solid #c9ced4; background: #fff; border-radius: 6px; padding: 3px 10px;
-                 cursor: pointer; font: inherit; font-size: 13px; }
-  .lang button.on { background: #1d2329; color: #fff; border-color: #1d2329; }
-  .legend { bottom: 28px; left: 12px; font-size: 13px; line-height: 1.7; }
-  .dot { display: inline-block; width: 12px; height: 12px; border-radius: 50%; margin-right: 6px; vertical-align: -1px; }
-  .footer { bottom: 28px; right: 12px; font-size: 11px; max-width: 300px; color: #4a5560; }
-  @media (max-width: 600px) { .footer { display: none; } .title { left: 50px; } }
-  .popup { font-size: 13px; line-height: 1.45; width: 320px; max-width: 75vw;
-           max-height: min(65vh, 480px); overflow-y: auto; padding-right: 4px; }
-  .popup .head { display: flex; justify-content: space-between; align-items: center; gap: 8px; font-size: 15px; }
-  .popup h4 { margin: 10px 0 3px; font-size: 13px; display: flex; gap: 6px; align-items: center; }
-  .popup p { margin: 0; }
-  .popup ul { margin: 2px 0; padding-left: 18px; }
-  .popup .small { margin-top: 8px; font-size: 11px; color: #5b6670; }
-  .chip { border-radius: 10px; padding: 0 8px; font-size: 11px; font-weight: 600; white-space: nowrap; }
-  .chart { width: 100%; height: auto; margin-top: 4px; }
-  .chart text { font-size: 9px; fill: #5b6670; }
-  .legend-row { font-size: 11px; color: #5b6670; }
-  .sw { display: inline-block; width: 10px; height: 10px; margin: 0 4px 0 8px; vertical-align: -1px; }
-</style>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;600;700&family=Noto+Sans+Khmer:wght@400;500;600;700&display=swap" rel="stylesheet">
 """
 
 
-def page_panels(generated):
-    legend = "".join(
-        f'<div><span class="dot" style="background:{COLORS[k]}"></span>{bi(*LEVEL_TEXT[k])}</div>' for k in COLORS
-    )
-    return f"""
-<div class="panel title">
-  <h1>Field Shift KH</h1>
-  <p>{bi('Rice planting guidance from NASA POWER Earth data. Click a province.',
-         'ការណែនាំអំពីការដាំស្រូវ ពីទិន្នន័យផែនដី NASA POWER។ ចុចលើខេត្តណាមួយ។')}</p>
-  <div class="lang">
-    <button id="btn-en" class="on" onclick="setLang('en')">English</button>
-    <button id="btn-km" onclick="setLang('km')">ខ្មែរ</button>
-  </div>
-</div>
-<div class="panel legend">{legend}</div>
-<div class="panel footer">
-  {bi('Data: NASA POWER daily point API (AG), 2000–2026, power.larc.nasa.gov. '
-      'Rule-based prototype, not yet validated by agronomists. '
-      'Code partly generated with AI (Claude Code).',
-      'ទិន្នន័យ៖ NASA POWER (AG) ២០០០–២០២៦, power.larc.nasa.gov។ '
-      'គំរូដំបូងផ្អែកលើច្បាប់ មិនទាន់ត្រួតពិនិត្យដោយអ្នកជំនាញកសិកម្ម។ '
-      'កូដមួយផ្នែកបង្កើតដោយ AI (Claude Code)។')}
-  {bi(f'Built {generated}.', f'បង្កើតថ្ងៃ {generated}។')}
-</div>
-<script>
-  function setLang(l) {{
-    document.body.classList.toggle('lang-km', l === 'km');
-    document.documentElement.lang = l;
-    document.getElementById('btn-en').classList.toggle('on', l === 'en');
-    document.getElementById('btn-km').classList.toggle('on', l === 'km');
-  }}
-  // Hide the title panel while a pop-up is open so it doesn't cover the pop-up.
-  window.addEventListener('load', () => {{
-    const map = Object.values(window).find(v => v instanceof L.Map);
-    const title = document.querySelector('.panel.title');
-    map.on('popupopen', () => title.style.display = 'none');
-    map.on('popupclose', () => title.style.display = '');
-  }});
-</script>
-"""
+def asset_version():
+    """Short hash of the CSS/JS so browsers fetch the new files after a change."""
+    h = hashlib.sha1()
+    for path in ASSETS:
+        h.update((DOCS / path).read_bytes())
+    return h.hexdigest()[:8]
+
+
+def country_bounds(shapes):
+    """[[south, west], [north, east]] of the Cambodia outline."""
+    outline = next(f for f in shapes["features"] if f["properties"]["slug"] == "_cambodia")
+    lons = [x for x, _ in outline["geometry"]["coordinates"][0]]
+    lats = [y for _, y in outline["geometry"]["coordinates"][0]]
+    return [[min(lats), min(lons)], [max(lats), max(lons)]]
+
+
+def rotation_for_page(r):
+    """A rotation's text (as {"en", "km"}) and benefit scores, for app.js."""
+    text = {k: {"en": r[k][0], "km": r[k][1]} for k in ("name", "label", "short", "pros", "cons", "gaps")}
+    return {"id": r["id"], "current": r["current"], "benefits": r["benefits"], **text}
+
+
+def page_data(summary, shapes):
+    provinces = list(summary["provinces"].values())
+    return {
+        "currentYear": summary["current_year"],
+        "lastDataDate": min(p["last_data_date"] for p in provinces),
+        "rules": summary["rules"],
+        "tips": {k: {"en": en, "km": km} for k, (en, km) in TIPS.items()},
+        "rotations": [rotation_for_page(r) for r in ROTATIONS],
+        "priorities": {k: {"en": en, "km": km} for k, (en, km) in PRIORITIES.items()},
+        "harvests": {k: {"en": en, "km": km} for k, (en, km) in HARVEST_LABELS.items()},
+        "bounds": country_bounds(shapes),
+        "repoUrl": REPO_URL,
+        "provinces": provinces,
+        "shapes": shapes,
+    }
 
 
 def main():
     summary = json.loads((PROCESSED_DIR / "summary.json").read_text(encoding="utf-8"))
-    year = summary["current_year"]
+    shapes = json.loads(SHAPES.read_text(encoding="utf-8"))
+    (south, west), (north, east) = country_bounds(shapes)
 
-    m = folium.Map(location=[12.3, 104.6], zoom_start=7, tiles="OpenStreetMap",control_scale=True)
-    m.get_root().header.add_child(folium.Element('<title>Field Shift KH</title>'))
-    m.get_root().header.add_child(folium.Element(PAGE_CSS))
+    # Locked to Cambodia: can't pan far past the border or zoom out to the region.
+    m = folium.Map(
+        tiles=None,
+        control_scale=True,
+        zoom_snap=0.25,
+        min_zoom=6,
+        max_zoom=11,
+        max_bounds=True,
+        min_lat=south - BOUNDS_PAD_DEG,
+        max_lat=north + BOUNDS_PAD_DEG,
+        min_lon=west - BOUNDS_PAD_DEG,
+        max_lon=east + BOUNDS_PAD_DEG,
+    )
+    folium.TileLayer(TILES, attr=TILES_ATTR, name="Base map", max_zoom=16).add_to(m)
+    m.fit_bounds([[south, west], [north, east]])
 
-    for p in summary["provinces"].values():
-        color = COLORS[p["overall"]]
-        folium.CircleMarker(
-            location=[p["lat"], p["lon"]],
-            radius=16,
-            color="#fff",
-            weight=3,
-            fill=True,
-            fill_color=color,
-            fill_opacity=0.95,
-            tooltip=f"{p['name_km']} · {p['name_en']}",
-            popup=folium.Popup(popup_html(p, year), max_width=360),
-        ).add_to(m)
-
-    m.get_root().html.add_child(folium.Element(page_panels(date.today().isoformat())))
+    version = asset_version()
+    root = m.get_root()
+    root.header.add_child(folium.Element(HEAD))
+    # In the body, not the head: Folium puts Bootstrap's CSS at the end of the head, and ours must load after it.
+    root.html.add_child(folium.Element(f'<link rel="stylesheet" href="assets/style.css?v={version}">'))
+    # Escape "</" so the JSON can't close the <script> tag early.
+    data_json = json.dumps(page_data(summary, shapes), ensure_ascii=False, separators=(",", ":")).replace("</", "<\\/")
+    root.html.add_child(folium.Element('<aside id="panel" class="panel"></aside>'))
+    root.html.add_child(folium.Element(f"<script>window.FIELD_SHIFT = {data_json};</script>"))
+    # defer: runs after the whole page (including Folium's map script) has been parsed.
+    root.header.add_child(folium.Element(f'<script src="assets/app.js?v={version}" defer></script>'))
 
     OUT.parent.mkdir(parents=True, exist_ok=True)
     m.save(OUT)

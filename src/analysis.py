@@ -1,7 +1,10 @@
-"""Turn NASA POWER daily data into season status, planting window, risk alerts and tips.
+"""Turn NASA POWER daily data into season status, planting window, risk alerts, tips and
+crop-rotation tests.
 
 Usage:
-    python src/analysis.py    # reads data/processed/power_daily*.csv, writes data/processed/summary.json
+    python src/analysis.py    # reads data/processed/power_daily*.csv (+ soil.csv), writes data/processed/summary.json
+
+Rotation options and their assumptions live in src/rotations.py.
 
 All rules are simple, transparent thresholds (no trained model). They are starting
 assumptions to validate with mentors and agronomic sources; tune them in RULES below.
@@ -14,6 +17,7 @@ import json
 import pandas as pd
 
 from config import PROCESSED_DIR, PROVINCES
+from rotations import HEAT_BAD_DAYS, ROTATIONS, SOIL_WATER_PER_TENTH_MM
 
 RULES = {
     "dry_day_mm": 1.0,  # a day with less rain than this counts as dry
@@ -208,8 +212,91 @@ def analyse_province(df, current_year):
     }
 
 
+def load_soil():
+    path = PROCESSED_DIR / "soil.csv"
+    if not path.exists():
+        return {}
+    # SoilGrids has no values for some points (e.g. city areas); those provinces fall back to loamy soil.
+    soil = pd.read_csv(path).dropna(subset=["texture"])
+    return {r["province"]: r for r in soil.to_dict("records")}
+
+
+def analyse_rotations(df, soil, current_year):
+    """Test each rotation against every past year's NASA POWER weather (see rotations.py)."""
+    df = df.set_index("date").sort_index()
+    rain, wet, tmax = df["precip_mm"], df["gwetroot"], df["t2m_max_c"]
+    years = range(df.index.year.min(), current_year)
+    texture = (soil or {}).get("texture") or "loamy"
+    per_tenth = SOIL_WATER_PER_TENTH_MM[texture]
+
+    # Months that are normally too dry for a crop without irrigation: when fields usually sit bare.
+    monthly = rain.resample("MS").sum()
+    normal_monthly = monthly[monthly.index.year < current_year].groupby(monthly.index.month[monthly.index.year < current_year]).mean()
+    bare_months = [int(m) for m in normal_monthly.index if normal_monthly[m] < 50]
+
+    results = {}
+    for rot in ROTATIONS:
+        w = rot["window"]
+        if w is None:
+            results[rot["id"]] = {"tested": False}
+            continue
+        by_start = {}
+        for key, start_md in w["starts"].items():
+            history = []
+            for y in years:
+                start = pd.Timestamp(f"{y}-{start_md}")
+                end = start + pd.Timedelta(days=w["days"] - 1)
+                if end > df.index.max():
+                    continue
+                window_rain = float(rain[start:end].sum())
+                sowing_wetness = float(wet[start - pd.Timedelta(days=15) : start - pd.Timedelta(days=1)].mean())
+                soil_water = max(0.0, sowing_wetness - 0.5) * 10 * per_tenth if w["uses_soil_water"] else 0.0
+                heat_days = int((tmax[start:end] >= w["heat_limit_c"]).sum())
+                history.append(
+                    {
+                        "year": y,
+                        "rain_mm": window_rain,
+                        "soil_water_mm": soil_water,
+                        "heat_days": heat_days,
+                        "water_ok": window_rain + soil_water >= w["water_need_mm"],
+                        "heat_ok": heat_days < HEAT_BAD_DAYS,
+                    }
+                )
+            h = pd.DataFrame(history)
+            by_start[key] = {
+                "sow": start_md,
+                "years_tested": len(h),
+                "reliability_rainfed": round(float((h["water_ok"] & h["heat_ok"]).mean()), 2),
+                "reliability_irrigated": round(float(h["heat_ok"].mean()), 2),
+                "mean_rain_mm": round(float(h["rain_mm"].mean())),
+                "mean_soil_water_mm": round(float(h["soil_water_mm"].mean())),
+                "mean_heat_days": round(float(h["heat_days"].mean()), 1),
+                # Compact per-year record for the page: [year, water ok, heat ok]
+                "years": [[int(r.year), int(r.water_ok), int(r.heat_ok)] for r in h.itertuples()],
+            }
+        results[rot["id"]] = {
+            "tested": True,
+            "water_need_mm": w["water_need_mm"],
+            "heat_limit_c": w["heat_limit_c"],
+            "days": w["days"],
+            "by_start": by_start,
+        }
+
+    return {
+        "soil": None
+        if not soil
+        else {k: soil[k] for k in ("clay_pct", "sand_pct", "soc_g_kg", "ph", "texture")},
+        "soil_texture_used": texture,
+        "bare_months": bare_months,
+        "rotations": results,
+    }
+
+
 def main():
     df = load()
+    soil = load_soil()
+    if not soil:
+        print("No data/processed/soil.csv yet (run src/fetch_soil.py); assuming loamy soil everywhere.")
     current_year = int(df["date"].dt.year.max())
     summary = {
         "generated_from": "NASA POWER daily point data (https://power.larc.nasa.gov/)",
@@ -220,12 +307,22 @@ def main():
     }
     for p in PROVINCES:
         result = analyse_province(df[df["province"] == p["slug"]], current_year)
+        result["rotation"] = analyse_rotations(df[df["province"] == p["slug"]], soil.get(p["slug"]), current_year)
         summary["provinces"][p["slug"]] = {**p, **result}
         late = [b["year"] for b in result["backtest"] if b["late_onset"]]
         print(
             f"{p['name_en']:13} {result['overall']:6} onset {result['onset']['date']} "
             f"(normal {result['onset']['normal_date']}), rain {result['season_check']['rain_anomaly_pct']:+.0f}%, "
             f"dry spell {result['dry_spell']['longest_days']}d, late-onset years: {late}"
+        )
+        rot = result["rotation"]["rotations"]
+        print(
+            f"{'':13} soil {result['rotation']['soil_texture_used']:6} rotations (rain-fed reliability): "
+            + ", ".join(
+                f"{k} " + "/".join(f"{s['reliability_rainfed']:.0%}" for s in v["by_start"].values())
+                for k, v in rot.items()
+                if v["tested"]
+            )
         )
 
     out = PROCESSED_DIR / "summary.json"
